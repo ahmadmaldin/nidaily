@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class TugasModel extends Model
+{
+    protected $table = 'tugas'; // Nama tabel di database
+    protected $primaryKey = 'id'; // Primary key
+    protected $useTimestamps = false; // Tidak menggunakan field timestamps
+    protected $allowedFields = [
+        'tugas', 'tanggal', 'waktu', 'status', 'alarm', 'created', 'date_due', 'time_due', 
+        'date_finished', 'time_finished', 'creator_id'
+    ]; // Fields yang bisa di-insert atau di-update
+    public function getTaskWithCreator($taskId)
+    {
+        return $this->select('tugas.*, users.name as creator_name')
+                    ->join('users', 'users.id = tugas.creator_id')
+                    ->where('tugas.id', $taskId)
+                    ->first(); // Ambil data tugas beserta nama creator
+    }
+    public function getTugasForUser($userId)
+{
+    return $this->db->table('tugas')
+        ->select('tugas.*')
+        ->join('share', 'tugas.id = share.id_task', 'left')
+        ->where('tugas.creator_id', $userId)
+        ->orWhere('share.id_user', $userId)
+        ->groupBy('tugas.id')
+        ->get()
+        ->getResultArray();
+}
+
+}
