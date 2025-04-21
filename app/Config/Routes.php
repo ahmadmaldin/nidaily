@@ -36,7 +36,7 @@ $routes->post('tugas/update/(:num)', 'tugas::update/$1');
 $routes->get('tugas/delete/(:num)', 'tugas::delete/$1');
 $routes->get('tugas/detail/(:num)', 'tugas::detail/$1');
 $routes->get('tugas/share/(:num)', 'Tugas::share/$1');
-
+$routes->post('tugas/share/(:num)', 'Tugas::storeShare/$1');   
 //user
 $routes->get('user', 'user::index');
 $routes->get('user/create', 'user::create');
@@ -52,7 +52,7 @@ $routes->get('/attachment/create', 'Attachment::create');
 $routes->post('/attachment/store', 'Attachment::store');
 $routes->get('/attachment/edit/(:num)', 'Attachment::edit/$1');
 $routes->post('/attachment/update/(:num)', 'Attachment::update/$1');
-$routes->get('/attachment/delete/(:num)', 'Attachment::delete/$1');
+$routes->delete('attachment/delete/(:num)', 'Attachment::delete/$1');
 
 // members
 $routes->get('/members', 'Members::index');
@@ -62,7 +62,7 @@ $routes->get('/members/edit/(:num)', 'Members::edit/$1');
 $routes->post('/members/update/(:num)', 'Members::update/$1');
 $routes->get('/members/delete/(:num)', 'Members::delete/$1');
 
-// Group Routes
+// Group 
 $routes->get('/groups', 'Groups::index'); 
 $routes->get('/groups/create', 'Groups::create'); 
 $routes->post('/groups/store', 'Groups::store'); 
@@ -75,11 +75,10 @@ $routes->get('groups/addMember/(:num)', 'Groups::addMember/$1');
 $routes->get('groups/members/(:num)', 'Groups::members/$1');
 
 //shared
- $routes->get('/', 'Share::index');                    
- $routes->get('create', 'Share::create');              
- $routes->post('store', 'Share::store');               
- $routes->get('edit/(:num)', 'Share::edit/$1');        
- $routes->post('update/(:num)', 'Share::update/$1');   
- $routes->get('delete/(:num)', 'Share::delete/$1');    
- $routes->post('share/store', 'Share::store');
-    
+$routes->get('/', 'Shared::index');
+$routes->get('create', 'Shared::create');
+$routes->post('store', 'Shared::store');
+$routes->get('edit/(:num)', 'Shared::edit/$1');
+$routes->post('update/(:num)', 'Shared::update/$1');
+$routes->get('delete/(:num)', 'Shared::delete/$1');
+

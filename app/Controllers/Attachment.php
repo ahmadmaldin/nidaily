@@ -7,11 +7,11 @@ use CodeIgniter\Controller;
 
 class Attachment extends Controller
 {
-    protected $AttachmentModel;
+    protected $attachmentModel;
 
     public function __construct()
     {
-        $this->AttachmentModel = new AttachmentModel();
+        $this->attachmentModel = new AttachmentModel();
         helper(['form', 'url']);
     }
 
@@ -21,17 +21,17 @@ class Attachment extends Controller
         $perPage = 10;
 
         if ($keyword) {
-            $attachment = $this->AttachmentModel->like('description', $keyword)
-                                                 ->orLike('type', $keyword)
-                                                 ->paginate($perPage);
+            $attachment = $this->attachmentModel->like('description', $keyword)
+                                                ->orLike('type', $keyword)
+                                                ->paginate($perPage);
         } else {
-            $attachment = $this->AttachmentModel->paginate($perPage);
+            $attachment = $this->attachmentModel->paginate($perPage);
         }
 
         $data = [
             'title'      => 'Data Attachment',
             'attachment' => $attachment,
-            'pager'      => $this->AttachmentModel->pager,
+            'pager'      => $this->attachmentModel->pager,
             'keyword'    => $keyword
         ];
         return view('attachment/index', $data);
@@ -44,62 +44,88 @@ class Attachment extends Controller
         ];
         return view('attachment/create', $data);
     }
-
     public function store()
     {
-        $data = [
-            'id_tugas'    => $this->request->getPost('id_tugas'),
+        $file = $this->request->getFile('file');
+        $id_tugas = $this->request->getPost('id_tugas');
+    
+        $fileName = null;
+    
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $fileName = $file->getRandomName();
+            $file->move('public/uploads/attachment/', $fileName); // Pastikan ini ke public/
+        }
+    
+        $this->attachmentModel->save([
+            'id_tugas'    => $id_tugas,
             'type'        => $this->request->getPost('type'),
             'description' => $this->request->getPost('description'),
-            'file'        => $this->uploadfile()
-        ];
-
-        $this->AttachmentModel->save($data);
-
-        return redirect()->to('/attachment')->with('success', 'Attachment berhasil ditambahkan.');
+            'file'        => $fileName, // bisa null jika tidak upload file
+        ]);
+    
+        return redirect()->to('/tugas/detail/' . $id_tugas)->with('success', 'Attachment berhasil ditambahkan.');
     }
+    
+
 
     public function edit($id)
     {
         $data = [
             'title'      => 'Edit Attachment',
-            'attachment' => $this->AttachmentModel->find($id)
+            'attachment' => $this->attachmentModel->find($id)
         ];
 
         return view('attachment/edit', $data);
     }
 
-    public function update($id_attachment)
+    public function update($id)
     {
+        $attachment = $this->attachmentModel->find($id);
+        $file = $this->request->getFile('file');
+        $id_tugas = $this->request->getPost('id_tugas');
+
         $data = [
-            'id_tugas'    => $this->request->getPost('id_tugas'),
+            'id_tugas'    => $id_tugas,
             'type'        => $this->request->getPost('type'),
             'description' => $this->request->getPost('description'),
         ];
 
-        if ($file = $this->uploadfile()) {
-            $data['file'] = $file;
-        }
-
-        $this->AttachmentModel->update($id_attachment, $data);
-
-        return redirect()->to('/attachment')->with('success', 'Data attachment berhasil diperbarui.');
-    }
-
-    public function delete($id_attachment)
-    {
-        $this->AttachmentModel->delete($id_attachment);
-        return redirect()->to('/attachment')->with('success', 'Data attachment berhasil dihapus.');
-    }
-
-    private function uploadfile()
-    {
-        $file = $this->request->getFile('file');
         if ($file && $file->isValid() && !$file->hasMoved()) {
-            $newName = $file->getRandomName();
-            $file->move('uploads/attachment/', $newName);
-            return $newName;
+            // Hapus file lama jika ada
+            if (!empty($attachment['file']) && file_exists('uploads/attachment/' . $attachment['file'])) {
+                unlink('uploads/attachment/' . $attachment['file']);
+            }
+
+            // Upload file baru
+            $fileName = $file->getRandomName();
+            $file->move('uploads/attachment/', $fileName);
+            $data['file'] = $fileName;
         }
-        return null;
+
+        // Update data attachment
+        $this->attachmentModel->update($id, $data);
+
+        return redirect()->to('/tugas/detail/' . $id_tugas)->with('success', 'Attachment berhasil diperbarui.');
+    }
+
+    public function delete($id)
+    {
+        $attachment = $this->attachmentModel->find($id);
+        $id_tugas = $attachment['id_tugas'] ?? null;
+
+        if ($attachment) {
+            // Hapus file fisik jika ada
+            if (!empty($attachment['file'])) {
+                $filePath = 'uploads/attachment/' . $attachment['file'];
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+
+            // Hapus data attachment dari database
+            $this->attachmentModel->delete($id);
+        }
+
+        return redirect()->to('/tugas/detail/' . $id_tugas)->with('success', 'Attachment berhasil dihapus.');
     }
 }

@@ -8,8 +8,4 @@ class Home extends BaseController
     {
         return view('layouts/dashboard', ['title' => 'Dashboard']);
     }
-    public function dashboard(): string
-    {
-        return view('layouts/dashboard', ['title' => 'Dashboard']);
-    }
 }

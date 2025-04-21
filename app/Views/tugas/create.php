@@ -12,47 +12,64 @@
     <!-- CSS Dasar langsung di dalam file -->
     
 </head>
-<body>
-    <h1>Tambah Task</h1>
-    <form action="<?= site_url('tugas/store'); ?>" method="post">
+<?= $this->extend('layouts/main'); ?>
+<?= $this->section('content'); ?>
+        <h4 class="card-title">Tambah Task</h4>
+        <p class="card-description">Form untuk menambahkan tugas baru</p>
 
+        <form action="<?= site_url('tugas/store'); ?>" method="post" class="forms-sample">
+          <div class="form-group">
+            <label for="tugas">Task</label>
+            <input type="text" class="form-control" name="tugas" id="tugas" required placeholder="Masukkan nama tugas">
+          </div>
+
+          <div class="form-group">
+            <label for="tanggal">Tanggal</label>
+            <input type="date" class="form-control" name="tanggal" id="tanggal" required>
+          </div>
+
+          <div class="form-group">
+            <label for="waktu">Waktu</label>
+            <input type="time" class="form-control" name="waktu" id="waktu" required>
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" name="status" id="status" required>
+              <option value="To do">To do</option>
+              <option value="Berjalan">Berjalan</option>
+              <option value="Selesai">Selesai</option>
+              <option value="Batal">Batal</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="alarm">Alarm</label>
+            <select class="form-control" name="alarm" id="alarm" required>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="date_due">Due Date</label>
+            <input type="date" class="form-control" name="date_due" id="date_due" required>
+          </div>
+
+          <div class="form-group">
+            <label for="time_due">Time Due</label>
+            <input type="time" class="form-control" name="time_due" id="time_due">
+          </div>
+
+          <input type="hidden" name="creator_id" value="">
+
+          <button type="submit" class="btn btn-primary mr-2">Simpan Task</button>
+          <a href="<?= site_url('tugas'); ?>" class="btn btn-light">← Kembali</a>
+        </form>
+      
     
-        <label for="tugas">Task:</label>
-        <input type="text" name="tugas" required>
 
-        <label for="tanggal">Tanggal:</label>
-        <input type="date" name="tanggal" required>
-
-        <label for="waktu">Waktu:</label>
-        <input type="time" name="waktu" required>
-
-        <label for="status">Status:</label>
-        <select name="status" required>
-            <option value="To do">To do</option>
-            <option value="Berjalan">Berjalan</option>
-            <option value="Selesai">Selesai</option>
-            <option value="Batal">Batal</option>
-        </select>
-
-        <label for="alarm">Alarm:</label>
-        <select name="alarm" required>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-        </select>
-
-        <label for="date_due">Due Date:</label>
-        <input type="date" name="date_due" required>
-
-        <label for="time_due">Time Due:</label>
-        <input type="time" name="time_due">
-
-        <input type="hidden" name="creator_id">
-
-        <button type="submit">Simpan Task</button>
-    </form>
-
-    <a href="<?= site_url('tugas'); ?>">← Kembali ke Daftar Task</a>
-</body>
+<?= $this->endSection(); ?>
 </html>
 
 <?= $this->endSection(); ?>
