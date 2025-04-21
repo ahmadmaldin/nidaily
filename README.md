@@ -1,1 +1,2 @@
 # nidaily
+INI PUNYA NIDIA GITANIA RAYA
