@@ -3,33 +3,40 @@
 namespace App\Controllers;
 
 use App\Models\GroupsModel;
-use App\Models\MembersModel;
+use App\Models\MembersModel; // Menggunakan MembersModel sesuai permintaan
 use App\Models\UserModel; // Model untuk data user
 use CodeIgniter\Controller;
 
 class Groups extends Controller
 {
     protected $groupsModel;
-    protected $membersModel;
+    protected $membersModel; // Menggunakan MembersModel
     protected $userModel;
 
     public function __construct()
     {
         $this->groupsModel = new GroupsModel();
-        $this->membersModel = new MembersModel();
+        $this->membersModel = new MembersModel(); // Menyambungkan dengan MembersModel
         $this->userModel = new UserModel();
         helper(['form', 'url']);
     }
 
     public function index()
     {
-$groups = $this->groupsModel->getGroupsWithCreatorName();
+        $groups = $this->groupsModel->getGroupsWithCreatorName();
 
         return view('groups/index', [
             'title'  => 'Daftar Grup',
             'groups' => $groups
         ]);
     }
+    public function getGroupsWithCreatorName()
+{
+    return $this->select('groups.*, user.username AS creator_name')
+                ->join('user', 'user.id_user = groups.created_by')
+                ->findAll();
+}
+
 
     public function create()
     {
@@ -139,21 +146,21 @@ $groups = $this->groupsModel->getGroupsWithCreatorName();
     }
 
     public function addMember($id_groups)
-    {
-        $group = $this->groupsModel->find($id_groups);
-        if (!$group) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Grup tidak ditemukan.');
-        }
-
-        $users = $this->userModel->findAll();
-
-        return view('groups/add_member', [
-            'title' => 'Tambah Member ke Grup',
-            'group' => $group,
-            'users' => $users
-        ]);
+{
+    $group = $this->groupsModel->find($id_groups);
+    if (!$group) {
+        throw new \CodeIgniter\Exceptions\PageNotFoundException('Grup tidak ditemukan.');
     }
-    
+
+    $users = $this->userModel->findAll();
+
+    return view('groups/add_member', [
+        'title' => 'Tambah Member ke Grup',
+        'group' => $group,
+        'users' => $users
+    ]);
+}
+
 
     public function storeMember($id_groups)
     {
@@ -170,57 +177,61 @@ $groups = $this->groupsModel->getGroupsWithCreatorName();
             'member_level' => $member_level,
         ];
     
-        // DEBUG sementara
-        // dd($data); // pastikan value-nya sesuai sebelum insert
-    
         $this->membersModel->insert($data);
     
         return redirect()->to('/groups/members/' . $id_groups)->with('success', 'Member berhasil ditambahkan.');
     }
-    
 
     public function members($id_groups)
-{
-    $group = $this->groupsModel->find($id_groups);
-    if (!$group) {
-        throw new \CodeIgniter\Exceptions\PageNotFoundException('Grup tidak ditemukan.');
+    {
+        $group = $this->groupsModel->find($id_groups);
+        if (!$group) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Grup tidak ditemukan.');
+        }
+
+        // Ambil data member dengan join
+        $members = $this->membersModel->select('members.*, user.username')
+                                      ->join('user', 'user.id_user = members.user_id')
+                                      ->where('id_groups', $id_groups)
+                                      ->findAll();
+
+        return view('groups/members', [
+            'title'   => 'Daftar Member di Grup: ' . esc($group['group_name']),
+            'group'   => $group,
+            'members' => $members
+        ]);
     }
 
-    // Ambil data member berdasarkan id_groups
-    $members = $this->membersModel->where('id_groups', $id_groups)->findAll();
-
-    // Menghubungkan member dengan data user berdasarkan user_id
-    foreach ($members as &$member) {
-        $user = $this->userModel->find($member['user_id']);
-        $member['username'] = $user ? $user['username'] : 'Unknown'; // Menampilkan username
+    public function detail($id_groups)
+    {
+        // Ambil ID user dari session
+        $session = session();
+        $sessionUserId = $session->get('id_user'); // Pastikan 'id_user' memang diset saat login
+    
+        // Ambil data grup dengan join ke user untuk dapatkan nama pembuat (creator_name)
+        $group = $this->groupsModel
+            ->select('groups.*, user.username AS creator_name')
+            ->join('user', 'user.id_user = groups.created_by')
+            ->where('groups.id_groups', $id_groups)
+            ->first();
+    
+        if (!$group) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Grup tidak ditemukan.');
+        }
+    
+        // Ambil daftar member dengan join ke user
+        $members = $this->membersModel
+            ->join('user', 'user.id_user = members.user_id')
+            ->where('id_groups', $id_groups)
+            ->findAll();
+    
+        return view('groups/detail', [
+            'title'         => 'Detail Grup: ' . esc($group['group_name']),
+            'group'         => $group,
+            'members'       => $members,
+            'sessionUserId' => $sessionUserId, // Kirim ke view kalau mau dicek di sana
+        ]);
     }
-
-    return view('groups/members', [
-        'title'   => 'Daftar Member di Grup: ' . esc($group['group_name']),
-        'group'   => $group,
-        'members' => $members
-    ]);
-}
-public function detail($id_groups)
-{
-    // Mengambil data grup
-    $group = $this->groupsModel->find($id_groups);
-    if (!$group) {
-        throw new \CodeIgniter\Exceptions\PageNotFoundException('Grup tidak ditemukan.');
-    }
-
-    // Mengambil daftar member yang ada di grup
-    $members = $this->membersModel
-                    ->join('user', 'user.id_user = members.user_id') // Join dengan tabel user untuk mendapatkan data user
-                    ->where('id_groups', $id_groups)
-                    ->findAll();
-
-    return view('groups/detail', [
-        'title'   => 'Detail Grup: ' . esc($group['group_name']),
-        'group'   => $group,
-        'members' => $members
-    ]);
-}
-
+    
 
 }

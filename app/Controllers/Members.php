@@ -29,7 +29,7 @@ class Members extends Controller
         // Validasi input
         if (!$this->validate([
             'id_groups'    => 'required|integer',
-            'user_id'      => 'required|integer',
+            'id_user'      => 'required|integer',
             'member_level' => 'required|in_list[admin,member]',
         ])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
@@ -38,7 +38,7 @@ class Members extends Controller
         // Data yang akan dimasukkan ke dalam tabel
         $data = [
             'id_groups'    => $this->request->getPost('id_groups'),
-            'user_id'      => $this->request->getPost('user_id'),
+            'id_user'      => $this->request->getPost('id_user'),
             'member_level' => $this->request->getPost('member_level'),
         ];
 
@@ -70,7 +70,7 @@ class Members extends Controller
         // Validasi input
         if (!$this->validate([
             'id_groups'    => 'required|integer',
-            'user_id'      => 'required|integer',
+            'id_user'      => 'required|integer',
             'member_level' => 'required|in_list[admin,member]',
         ])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
@@ -79,7 +79,7 @@ class Members extends Controller
         // Data yang akan diperbarui
         $data = [
             'id_groups'    => $this->request->getPost('id_groups'),
-            'user_id'      => $this->request->getPost('user_id'),
+            'id_user'      => $this->request->getPost('id_user'),
             'member_level' => $this->request->getPost('member_level'),
         ];
 

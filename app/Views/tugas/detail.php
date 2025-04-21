@@ -1,339 +1,330 @@
 <?= $this->extend('layouts/main'); ?>
 <?= $this->section('content'); ?>
 
-<h1>Detail Task</h1>
+<h3>Detail Task</h3>
+<?php if (!empty($tugas)): ?>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Id:</strong><br>
+                <?= esc($tugas['id']); ?>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Task:</strong><br>
+                <?= esc($tugas['tugas']); ?>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Tanggal:</strong><br>
+                <?= esc($tugas['tanggal']); ?>
+            </div>
+        </div>
 
-<div class="tugas-detail">
-    <p><strong>Id:</strong> <?= esc($tugas['id']); ?></p>
-    <p><strong>Task:</strong> <?= esc($tugas['tugas']); ?></p>
-    <p><strong>Tanggal:</strong> <?= esc($tugas['tanggal']); ?></p>
-    <p><strong>Waktu:</strong> <?= esc($tugas['waktu']); ?></p>
-    <p><strong>Status:</strong> <?= esc($tugas['status']); ?></p>
-    <p><strong>Alarm:</strong> <?= esc($tugas['alarm']); ?></p>
-    <p><strong>Due Date:</strong> <?= esc($tugas['date_due']); ?></p>
-    <p><strong>Time Due:</strong> <?= esc($tugas['time_due']); ?></p>
-    <p><strong>Creator ID:</strong> <?= esc($tugas['creator_id']); ?></p>
-</div>
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Waktu:</strong><br>
+                <?= esc($tugas['waktu']); ?>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Status:</strong><br>
+                <?= esc($tugas['status']); ?>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Alarm:</strong><br>
+                <?= esc($tugas['alarm']); ?>
+            </div>
+        </div>
 
-<h2>Tambah Attachment</h2>
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Due Date:</strong><br>
+                <?= esc($tugas['date_due']); ?>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Time Due:</strong><br>
+                <?= esc($tugas['time_due']); ?>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="border p-3 rounded">
+                <strong>Creator ID:</strong><br>
+                <?= esc($tugas['creator_id']); ?>
+            </div>
+        </div>
+    </div>
+<?php else: ?>
+    <div class="alert alert-warning">Data tugas tidak ditemukan.</div>
+<?php endif; ?>
+<hr></hr>
+
+
+<h3 class="mb-4">Tambah Attachment</h3>
 
 <?php if (session()->getFlashdata('errors')): ?>
-    <div class="alert alert-danger">
-        <ul>
-            <?php foreach (session()->getFlashdata('errors') as $error): ?>
-                <li><?= esc($error) ?></li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
+  <div class="alert alert-danger">
+    <ul>
+      <?php foreach (session()->getFlashdata('errors') as $error): ?>
+        <li><?= esc($error) ?></li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
 <?php endif; ?>
-<form action="<?= site_url('attachment/store'); ?>" method="post" enctype="multipart/form-data">
-    <?= csrf_field() ?>
-    <input type="hidden" name="id_tugas" value="<?= esc($tugas['id']); ?>">
 
+<form action="<?= site_url('attachment/store'); ?>" method="post" enctype="multipart/form-data">
+  <?= csrf_field() ?>
+  <input type="hidden" name="id_tugas" value="<?= esc($tugas['id']); ?>">
+
+  <!-- Select Type -->
+  <div class="form-group">
     <label for="type">Type</label>
-    <select name="type" id="type" required onchange="showInputField()">
+    <div class="input-group">
+      <select name="type" id="type" class="form-control" onchange="showInputField()" required>
         <option value="file" <?= old('type') == 'file' ? 'selected' : '' ?>>File</option>
         <option value="photo" <?= old('type') == 'photo' ? 'selected' : '' ?>>Photo</option>
         <option value="link" <?= old('type') == 'link' ? 'selected' : '' ?>>Link</option>
         <option value="maps" <?= old('type') == 'maps' ? 'selected' : '' ?>>Maps</option>
         <option value="text" <?= old('type') == 'text' ? 'selected' : '' ?>>Text</option>
-    </select><br><br>
-
-    <!-- Input untuk file -->
-    <div id="file-input" style="display: none;">
-        <label for="file">File</label><br>
-        <input type="file" name="file" id="file"><br><br>
+      </select>
     </div>
+  </div>
 
-    <!-- Input untuk photo -->
-    <div id="photo-input" style="display: none;">
-        <label for="photo">Photo</label><br>
-        <input type="file" name="photo" id="photo" accept="image/*"><br><br>
+  <!-- Input Fields per Type -->
+  <div class="form-group" id="file-input" style="display: none;">
+    <label for="file">File</label>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">📁</span>
+      </div>
+      <input type="file" name="file" id="file" class="form-control">
     </div>
+  </div>
 
-    <!-- Input untuk link -->
-    <div id="link-input" style="display: none;">
-        <label for="link">Link</label><br>
-        <input type="url" name="link" id="link" placeholder="Masukkan URL"><br><br>
+  <div class="form-group" id="photo-input" style="display: none;">
+    <label for="photo">Photo</label>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">🖼️</span>
+      </div>
+      <input type="file" name="photo" id="photo" accept="image/*" class="form-control">
     </div>
+  </div>
 
-    <!-- Input untuk maps -->
-    <div id="maps-input" style="display: none;">
-        <label for="maps-url">Google Maps URL</label><br>
-        <input type="text" name="maps-url" id="maps-url" placeholder="Masukkan URL lokasi di Google Maps" pattern="https://www\.google\.com/maps/.*" title="Masukkan URL yang valid dari Google Maps" oninput="updateMapPreview()"><br><br>
-        
-        <!-- Embeddable Google Maps Preview -->
-        <div id="map-preview" style="display: none;">
-            <label>Preview Peta Google Maps:</label><br>
-            <iframe id="google-map" width="600" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
+  <div class="form-group" id="link-input" style="display: none;">
+    <label for="link">Link</label>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">🔗</span>
+      </div>
+      <input type="url" name="link" id="link" class="form-control" placeholder="Masukkan URL">
+    </div>
+  </div>
+
+  <div id="maps-input" style="display: none;">
+    <div class="form-group">
+      <label for="maps-url">Google Maps URL</label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">🗺️</span>
         </div>
+        <input type="text" name="maps-url" id="maps-url" class="form-control"
+               placeholder="Masukkan URL lokasi di Google Maps"
+               pattern="https://www\.google\.com/maps/.*"
+               title="Masukkan URL yang valid dari Google Maps"
+               oninput="updateMapPreview()">
+      </div>
     </div>
 
-    <!-- Input untuk text -->
-    <div id="text-input" style="display: none;">
-        <label for="text">Text</label><br>
-        <textarea name="text" id="text" placeholder="Masukkan teks di sini"><?= old('text') ?></textarea><br><br>
+    <div id="map-preview" style="display: none;" class="mt-3">
+      <label>Preview Peta Google Maps:</label>
+      <iframe id="google-map" width="100%" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
     </div>
+  </div>
 
+  <div class="form-group" id="text-input" style="display: none;">
+    <label for="text">Text</label>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">📝</span>
+      </div>
+      <textarea name="text" id="text" class="form-control" placeholder="Masukkan teks di sini"><?= old('text') ?></textarea>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="form-group">
     <label for="description">Description</label>
-    <textarea name="description" id="description"><?= old('description') ?></textarea><br><br>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">🗒️</span>
+      </div>
+      <textarea name="description" id="description" class="form-control"><?= old('description') ?></textarea>
+    </div>
+  </div>
 
-    <!-- Tombol Submit yang diubah -->
-    <button type="submit" id="submit-btn">Simpan</button>
+  <button type="submit" id="submit-btn" class="btn btn-primary mt-2">Simpan</button>
 </form>
 
 <script>
-    function showInputField() {
-        var type = document.getElementById("type").value;
+  function showInputField() {
+    var type = document.getElementById("type").value;
 
-        // Sembunyikan semua input
-        document.getElementById("file-input").style.display = 'none';
-        document.getElementById("photo-input").style.display = 'none';
-        document.getElementById("link-input").style.display = 'none';
-        document.getElementById("maps-input").style.display = 'none';
-        document.getElementById("text-input").style.display = 'none';
+    document.getElementById("file-input").style.display = 'none';
+    document.getElementById("photo-input").style.display = 'none';
+    document.getElementById("link-input").style.display = 'none';
+    document.getElementById("maps-input").style.display = 'none';
+    document.getElementById("text-input").style.display = 'none';
 
-        // Tampilkan input sesuai dengan tipe yang dipilih
-        if (type === 'file') {
-            document.getElementById("file-input").style.display = 'block';
-            document.getElementById("submit-btn").innerText = "Unggah File";
-        } else if (type === 'photo') {
-            document.getElementById("photo-input").style.display = 'block';
-            document.getElementById("submit-btn").innerText = "Unggah Foto";
-        } else if (type === 'link') {
-            document.getElementById("link-input").style.display = 'block';
-            document.getElementById("submit-btn").innerText = "Masukkan Link";
-        } else if (type === 'maps') {
-            document.getElementById("maps-input").style.display = 'block';
-            document.getElementById("submit-btn").innerText = "Masukkan URL Peta";
-        } else if (type === 'text') {
-            document.getElementById("text-input").style.display = 'block';
-            document.getElementById("submit-btn").innerText = "Simpan Teks";
-        }
+    if (type === 'file') {
+      document.getElementById("file-input").style.display = 'block';
+      document.getElementById("submit-btn").innerText = "Unggah File";
+    } else if (type === 'photo') {
+      document.getElementById("photo-input").style.display = 'block';
+      document.getElementById("submit-btn").innerText = "Unggah Foto";
+    } else if (type === 'link') {
+      document.getElementById("link-input").style.display = 'block';
+      document.getElementById("submit-btn").innerText = "Masukkan Link";
+    } else if (type === 'maps') {
+      document.getElementById("maps-input").style.display = 'block';
+      document.getElementById("submit-btn").innerText = "Masukkan URL Peta";
+    } else if (type === 'text') {
+      document.getElementById("text-input").style.display = 'block';
+      document.getElementById("submit-btn").innerText = "Simpan Teks";
     }
+  }
 
-    function updateMapPreview() {
-        var mapsUrl = document.getElementById("maps-url").value;
-        var mapPreview = document.getElementById("map-preview");
-        var iframe = document.getElementById("google-map");
+  function updateMapPreview() {
+    var mapsUrl = document.getElementById("maps-url").value;
+    var mapPreview = document.getElementById("map-preview");
+    var iframe = document.getElementById("google-map");
 
-        if (mapsUrl && mapsUrl.startsWith("https://www.google.com/maps/")) {
-            mapPreview.style.display = "block";
-            iframe.src = mapsUrl; // Update iframe with the provided URL
-        } else {
-            mapPreview.style.display = "none";
-        }
+    if (mapsUrl && mapsUrl.startsWith("https://www.google.com/maps/")) {
+      mapPreview.style.display = "block";
+      iframe.src = mapsUrl;
+    } else {
+      mapPreview.style.display = "none";
     }
+  }
 
-    // Panggil fungsi ini saat halaman dimuat untuk menampilkan input yang sesuai
-    window.onload = showInputField;
+  window.onload = showInputField;
 </script>
 
 
-<script>
-    function showInputField() {
-        var type = document.getElementById("type").value;
-
-        // Sembunyikan semua input
-        document.getElementById("file-input").style.display = 'none';
-        document.getElementById("photo-input").style.display = 'none';
-        document.getElementById("link-input").style.display = 'none';
-        document.getElementById("maps-input").style.display = 'none';
-        document.getElementById("text-input").style.display = 'none';
-
-        // Tampilkan input sesuai dengan tipe yang dipilih
-        if (type === 'file') {
-            document.getElementById("file-input").style.display = 'block';
-        } else if (type === 'photo') {
-            document.getElementById("photo-input").style.display = 'block';
-        } else if (type === 'link') {
-            document.getElementById("link-input").style.display = 'block';
-        } else if (type === 'maps') {
-            document.getElementById("maps-input").style.display = 'block';
-        } else if (type === 'text') {
-            document.getElementById("text-input").style.display = 'block';
-        }
-    }
-
-    function updateMapPreview() {
-        var mapsUrl = document.getElementById("maps-url").value;
-        var mapPreview = document.getElementById("map-preview");
-        var iframe = document.getElementById("google-map");
-
-        if (mapsUrl && mapsUrl.startsWith("https://www.google.com/maps/")) {
-            mapPreview.style.display = "block";
-            iframe.src = mapsUrl; // Update iframe with the provided URL
-        } else {
-            mapPreview.style.display = "none";
-        }
-    }
-
-    // Panggil fungsi ini saat halaman dimuat untuk menampilkan input yang sesuai
-    window.onload = showInputField;
-</script>
-
-
-
-
-<script>
-    function showInputField() {
-        var type = document.getElementById("type").value;
-
-        // Sembunyikan semua input
-        document.getElementById("file-input").style.display = 'none';
-        document.getElementById("photo-input").style.display = 'none';
-        document.getElementById("link-input").style.display = 'none';
-        document.getElementById("maps-input").style.display = 'none';
-        document.getElementById("text-input").style.display = 'none';
-
-        // Tampilkan input sesuai dengan tipe yang dipilih
-        if (type === 'file') {
-            document.getElementById("file-input").style.display = 'block';
-        } else if (type === 'photo') {
-            document.getElementById("photo-input").style.display = 'block';
-        } else if (type === 'link') {
-            document.getElementById("link-input").style.display = 'block';
-        } else if (type === 'maps') {
-            document.getElementById("maps-input").style.display = 'block';
-        } else if (type === 'text') {
-            document.getElementById("text-input").style.display = 'block';
-        }
-    }
-
-    // Panggil fungsi ini saat halaman dimuat untuk menampilkan input yang sesuai
-    window.onload = showInputField;
-</script>
-
-
+<hr></hr>
 <h3>Daftar Attachment</h3>
 
 <?php if (!empty($attachments)): ?>
-    <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse: collapse;">
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>No</th>
+                    <th>Tipe</th>
+                    <th>Deskripsi</th>
+                    <th>File/Link</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $no = 1; foreach ($attachments as $attach): ?>
+                    <tr>
+                        <td><?= $no++; ?></td>
+                        <td><?= esc(ucfirst($attach['type'])); ?></td>
+                        <td><?= esc($attach['description']); ?></td>
+                        <td>
+                            <?php if ($attach['type'] === 'link' || $attach['type'] === 'maps'): ?>
+                                <a href="<?= esc($attach['file']); ?>" target="_blank">Buka</a>
+                            <?php else: ?>
+                                <a href="<?= base_url('uploads/attachment/' . $attach['file']); ?>" target="_blank">Download</a>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <form action="<?= site_url('attachment/delete/' . $attach['id_attachment']); ?>" method="post" onsubmit="return confirm('Are you sure you want to delete this attachment?');">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+<?php else: ?>
+    <p>Belum ada attachment untuk tugas ini.</p>
+<?php endif; ?>
+<h4></h4>
+<hr></hr>
+<h3>Bagikan Tugas</h3>
+
+<!-- Form bagikan ke user -->
+<form action="<?= base_url('shared/store') ?>" method="post">
+    <input type="hidden" name="id_tugas" value="<?= esc($tugas['id']); ?>">
+
+    <div class="form-group">
+        <label for="id_user">Pilih User:</label>
+        <select name="id_user" class="form-control" required>
+            <option value="">-- Pilih User --</option>
+            <?php foreach ($users as $user): ?>
+                <?php if ($user['id_user'] != session()->get('id_user')): ?>
+                    <option value="<?= $user['id_user'] ?>"><?= $user['username'] ?></option>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <input type="hidden" name="sharedtype" value="user">
+    <button type="submit" class="btn btn-primary mt-3">Bagikan ke User</button>
+</form>
+
+<hr>
+
+<!-- Form bagikan ke grup -->
+<form action="<?= base_url('shared/shareToGroup/' . $tugas['id']) ?>" method="post">
+    <div class="form-group">
+        <label for="id_groups">Pilih Grup:</label>
+        <select name="id_groups" class="form-control" required>
+            <option value="">-- Pilih Grup --</option>
+            <?php foreach ($groups as $group): ?>
+                <option value="<?= $group['id_groups'] ?>"><?= $group['group_name'] ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Bagikan ke Grup</button>
+</form>
+<hr></hr>
+
+<h3>Daftar Penerima Tugas</h3>
+<?php if (!empty($sharedUsers)) : ?>
+    <table class="table table-bordered mt-3">
         <thead>
             <tr>
-                <th>No</th>
-                <th>Tipe</th>
-                <th>Deskripsi</th>
-                <th>File/Link</th>
-                <th>Aksi</th>
+                <th>ID User</th>
+                <th>Nama User</th>
+                <th>Tanggal Dibagikan</th>
             </tr>
         </thead>
         <tbody>
-            <?php $no = 1; foreach ($attachments as $attach): ?>
+            <?php foreach ($sharedUsers as $user) : ?>
                 <tr>
-                    <td><?= $no++; ?></td>
-                    <td><?= esc(ucfirst($attach['type'])); ?></td>
-                    <td><?= esc($attach['description']); ?></td>
-                    <td>
-                        <?php if ($attach['type'] === 'link' || $attach['type'] === 'maps'): ?>
-                            <a href="<?= esc($attach['file']); ?>" target="_blank">Buka</a>
-                        <?php else: ?>
-                            <a href="<?= base_url('uploads/attachment/' . $attach['file']); ?>" target="_blank">Download</a>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                    <form action="<?= site_url('attachment/delete/' . $attach['id_attachment']); ?>" method="post" onsubmit="return confirm('Are you sure you want to delete this attachment?');">
-    <?= csrf_field() ?>
-    <input type="hidden" name="_method" value="DELETE">
-    <button type="submit" class="btn btn-danger">Hapus</button>
-</form>
-
-                        
-                        
-                    </td>
+                    <td><?= esc($user['id_user']) ?></td>
+                    <td><?= esc($user['username']) ?></td>
+                    <td><?= date('d-m-Y H:i', strtotime($user['share_date'])) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
-<?php else: ?>
-    <p>Belum ada attachment untuk tugas ini.</p>
+<?php else : ?>
+    <p>Tugas ini belum dibagikan ke siapa pun.</p>
 <?php endif; ?>
 
-
-<hr>
-<h2>Bagikan Task ke Pengguna Lain</h2>
-
-<?php if (session()->getFlashdata('success')): ?>
-    <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
-<?php endif; ?>
-
-<?php if (session()->getFlashdata('error')): ?>
-    <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
-<?php endif; ?>
-
-<form action="<?= site_url('tugas/share'); ?>" method="post">
-    <?= csrf_field(); ?>
-    <input type="hidden" name="id_task" value="<?= esc($tugas['id']); ?>">
-    <input type="hidden" name="shared_by_user_id" value="<?= session()->get('id_user'); ?>">
-
-    <label for="id_user"><strong>Pilih Pengguna:</strong></label>
-    <select name="id_user" id="id_user" required>
-        <option value="">-- Pilih Pengguna --</option>
-        <?php foreach ($users as $user): ?>
-            <?php if ($user['id_user'] != session()->get('id_user')): ?>
-                <option value="<?= $user['id_user']; ?>"><?= esc($user['username']); ?></option>
-            <?php endif; ?>
-        <?php endforeach; ?>
-    </select>
-    <br><br>
-    <button type="submit" class="btn btn-primary">Bagikan</button>
-</form>
-
-<a href="<?= site_url('tugas'); ?>">← Kembali ke Daftar Task</a>
-
-<script>
-    const realFileBtn = document.getElementById("file");
-    const customBtn = document.getElementById("customBtn");
-    const fileName = document.getElementById("fileName");
-
-    customBtn.addEventListener("click", function () {
-        realFileBtn.click();
-    });
-
-    realFileBtn.addEventListener("change", function () {
-        if (realFileBtn.files.length > 0) {
-            fileName.textContent = realFileBtn.files[0].name;
-        } else {
-            fileName.textContent = "Belum ada file yang dipilih";
-        }
-    });
-</script>
-
-<style>
-    #customBtn {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-
-    #customBtn:hover {
-        background-color: #0056b3;
-    }
-
-    #fileName {
-        font-style: italic;
-        color: #555;
-    }
-
-    .tugas-detail {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        max-width: 800px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    .tugas-detail p {
-        margin: 10px 0;
-        font-size: 16px;
-    }
-
-    .tugas-detail p strong {
-        color: #007BFF;
-    }
-</style>
 
 <?= $this->endSection(); ?>

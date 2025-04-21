@@ -7,25 +7,20 @@ use CodeIgniter\Model;
 class MembersModel extends Model
 {
     
-    // Nama tabel di database
     protected $table            = 'members';
-    // Primary key dari tabel
     protected $primaryKey       = 'id_members';
-    // Auto increment aktif
     protected $useAutoIncrement = true;
-    // Tidak menggunakan timestamps (created_at, updated_at)
     protected $useTimestamps    = false;
-    // Kolom yang diizinkan untuk diinsert atau update
     protected $allowedFields = [
-        'id_groups',    // ID grup
-        'user_id',      // ID pengguna
-        'member_level', // Level member (admin/member)
+        'id_groups',   
+        'id_user',      
+        'member_level', 
     ];
 
     // Validasi otomatis untuk input
     protected $validationRules = [
         'id_groups'    => 'required|integer',
-        'user_id'      => 'required|integer',
+        'id_user'      => 'required|integer',
         'member_level' => 'required|in_list[admin,member]',
     ];
 
@@ -35,7 +30,7 @@ class MembersModel extends Model
             'required' => 'ID grup wajib diisi.',
             'integer'  => 'ID grup harus berupa angka.',
         ],
-        'user_id' => [
+        'id_user' => [
             'required' => 'User ID wajib diisi.',
             'integer'  => 'User ID harus berupa angka.',
         ],
@@ -55,10 +50,10 @@ class MembersModel extends Model
     }
 
     // Relasi dengan tabel 'users' untuk mendapatkan data user
-    public function getUser($user_id)
+    public function getUser($id_user)
     {
         return $this->db->table('users')
-                        ->where('id', $user_id)
+                        ->where('id', $id_user)
                         ->get()
                         ->getRowArray();
     }

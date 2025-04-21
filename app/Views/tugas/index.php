@@ -1,11 +1,5 @@
 <?= $this->extend('layouts/main'); ?>
 <?= $this->section('content'); ?>
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h4 class="mb-0">My Task Board</h4>
-  <a href="<?= site_url('tugas/create'); ?>" class="btn btn-primary">+ Tambah Tugas</a>
-</div>
-
 <div class="row flex-nowrap overflow-auto pb-3" style="gap: 16px;">
   <?php
   $statuses = ['To do', 'Berjalan', 'Selesai', 'Terlambat'];
@@ -40,8 +34,6 @@
                   <a href="<?= site_url('tugas/detail/'.$task['id']); ?>" class="text-info">Detail</a> |
                   <a href="<?= site_url('tugas/edit/'.$task['id']); ?>" class="text-warning">Edit</a> |
                   <a href="<?= site_url('tugas/delete/'.$task['id']); ?>" class="text-danger" onclick="return confirm('Yakin ingin menghapus tugas ini?');">Hapus</a>
-                  <a href="<?= site_url('tugas/share/'.$task['id']); ?>" class="text-warning">Share</a> |
-
                 </div>
               </div>
             <?php elseif ($task['status'] === $status && !$isOverdue): ?>
@@ -56,7 +48,6 @@
                   <a href="<?= site_url('tugas/detail/'.$task['id']); ?>" class="text-info">Detail</a> |
                   <a href="<?= site_url('tugas/edit/'.$task['id']); ?>" class="text-warning">Edit</a> |
                   <a href="<?= site_url('tugas/delete/'.$task['id']); ?>" class="text-danger" onclick="return confirm('Yakin ingin menghapus tugas ini?');">Hapus</a>
-                  <a href="<?= site_url('tugas/share/'.$task['id']); ?>" class="text-warning">Share</a> |
 
                 </div>
               </div>

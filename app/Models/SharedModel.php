@@ -4,14 +4,10 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ShareModel extends Model
+class SharedModel extends Model
 {
-    protected $table = 'shared'; // Nama tabel yang benar
-    protected $primaryKey = 'id_shared'; // Primary key yang benar
-
-    protected $useAutoIncrement = true;
-    protected $returnType = 'array'; // Bisa juga 'object' jika diinginkan
-    protected $useSoftDeletes = false;
+    protected $table = 'shared';
+    protected $primaryKey = 'id_shared';
 
     protected $allowedFields = [
         'id_task',
@@ -22,13 +18,5 @@ class ShareModel extends Model
         'accept_date',
     ];
 
-    protected $useTimestamps = false; // Tidak menggunakan timestamps otomatis, karena sudah pakai default current_timestamp
-
-    // Validasi otomatis
-    protected $validationRules = [
-        'id_task'            => 'required|integer',
-        'id_user'            => 'required|integer',
-        'shared_by_user_id'  => 'required|integer',
-        'accepted'           => 'in_list[yes,no,pending]',
-    ];
+    public $useTimestamps = false;
 }

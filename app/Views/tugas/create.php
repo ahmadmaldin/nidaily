@@ -63,12 +63,12 @@
 
           <input type="hidden" name="creator_id" value="">
 
-          <button type="submit" class="btn btn-primary mr-2">Simpan Task</button>
-          <a href="<?= site_url('tugas'); ?>" class="btn btn-light">← Kembali</a>
-        </form>
-      
-    
+          <p>                <p>
 
+
+          <button type="submit" class="btn btn-inverse-primary btn-fw">Simpan Task</button>
+          <a href="<?= site_url('tugas'); ?>" class="btn btn-inverse-secondary btn-fw">Kembali</a>
+        </form>
 <?= $this->endSection(); ?>
 </html>
 

@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\SharedModel;
 use App\Models\MemberModel;
+use App\Models\TugasModel;
+use App\Models\UserModel;
 use App\Models\GroupsModel;
 
 class Shared extends BaseController
@@ -23,14 +25,14 @@ class Shared extends BaseController
         $id_user = $this->request->getPost('id_user');
         $shared_by_user_id = session()->get('id');
 
-        // Cek apakah sudah pernah dibagikan
+        // Cek apakah sudah pernah dibagikan sebelumnya
         $alreadyShared = $this->sharedModel
             ->where('id_tugas', $id_tugas)
             ->where('id_user', $id_user)
             ->first();
 
         if ($alreadyShared) {
-            return redirect()->back()->with('error', 'Tugas sudah dibagikan sebelumnya.');
+            return redirect()->back()->with('error', 'Tugas sudah pernah dibagikan ke user ini.');
         }
 
         $this->sharedModel->save([
@@ -38,34 +40,39 @@ class Shared extends BaseController
             'id_user'           => $id_user,
             'shared_by_user_id' => $shared_by_user_id,
             'accepted'          => 'pending',
-            'share_date'        => date('Y-m-d H:i:s'),
+            'share_date'        => date('Y-m-d H:i:s')
         ]);
 
-        return redirect()->back()->with('success', 'Tugas berhasil dibagikan.');
+        return redirect()->back()->with('success', 'Tugas berhasil dibagikan ke user.');
     }
 
-    // Share ke grup
+    // Menyimpan data sharing tugas ke semua anggota group
     public function shareToGroup($id_tugas)
     {
-        $groupId = $this->request->getPost('idgroups');
-        $memberModel = new MemberModel();
-        $members = $memberModel->where('idgroups', $groupId)->findAll();
+        $groupId = $this->request->getPost('id_group');
+        $membersModel = new MembersModel();
+        $members = $membersModel->where('id_groups', $groupId)->findAll();
 
         $currentUserId = session()->get('id');
 
         foreach ($members as $member) {
-            $targetUserId = $member['iduser'];
-            if ($targetUserId == $currentUserId) continue;
+            $id_user = $member['iduser'];
 
+            // Skip jika user adalah pengirimnya sendiri
+            if ($id_user == $currentUserId) {
+                continue;
+            }
+
+            // Cek apakah sudah dibagikan
             $alreadyShared = $this->sharedModel
                 ->where('id_tugas', $id_tugas)
-                ->where('id_user', $targetUserId)
+                ->where('id_user', $id_user)
                 ->first();
 
             if (!$alreadyShared) {
                 $this->sharedModel->save([
                     'id_tugas'           => $id_tugas,
-                    'id_user'           => $targetUserId,
+                    'id_user'           => $id_user,
                     'shared_by_user_id' => $currentUserId,
                     'accepted'          => 'pending',
                     'share_date'        => date('Y-m-d H:i:s')
@@ -76,7 +83,7 @@ class Shared extends BaseController
         return redirect()->to('tugas/detail/' . $id_tugas)->with('success', 'Tugas berhasil dibagikan ke grup.');
     }
 
-    // Hapus sharing
+    // Menghapus data sharing
     public function delete($id)
     {
         $shared = $this->sharedModel->find($id);
@@ -90,13 +97,13 @@ class Shared extends BaseController
         return redirect()->back()->with('error', 'Data sharing tidak ditemukan.');
     }
 
-    // Update status accepted
+    // Update status accepted dari pending > yes > no > ulangi
     public function updateStatusNext($id)
     {
         $shared = $this->sharedModel->find($id);
 
         if (!$shared) {
-            return redirect()->back()->with('error', 'Data tidak ditemukan');
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
         }
 
         $statusList = ['pending', 'yes', 'no'];
@@ -110,6 +117,6 @@ class Shared extends BaseController
             'accept_date' => date('Y-m-d H:i:s')
         ]);
 
-        return redirect()->back()->with('success', 'Status updated menjadi: ' . ucfirst($nextStatus));
+        return redirect()->back()->with('success', 'Status diperbarui menjadi: ' . ucfirst($nextStatus));
     }
 }

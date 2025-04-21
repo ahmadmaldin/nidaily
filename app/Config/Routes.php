@@ -73,12 +73,12 @@ $routes->get('/groups/(:num)', 'Groups::detail/$1');
 $routes->post('/groups/storeMember/(:num)', 'Groups::storeMember/$1');
 $routes->get('groups/addMember/(:num)', 'Groups::addMember/$1');
 $routes->get('groups/members/(:num)', 'Groups::members/$1');
+$routes->get('/groups/(:num)/detail', 'Groups::detail/$1');
 
 //shared
-$routes->get('/', 'Shared::index');
-$routes->get('create', 'Shared::create');
-$routes->post('store', 'Shared::store');
-$routes->get('edit/(:num)', 'Shared::edit/$1');
-$routes->post('update/(:num)', 'Shared::update/$1');
-$routes->get('delete/(:num)', 'Shared::delete/$1');
+$routes->post('shared/store', 'Shared::store');
+$routes->post('shared/shareToGroup/(:num)', 'Shared::shareToGroup/$1');
+$routes->get('shared/delete/(:num)', 'Shared::delete/$1');
+$routes->get('shared/updateStatusNext/(:num)', 'Shared::updateStatusNext/$1');
+
 

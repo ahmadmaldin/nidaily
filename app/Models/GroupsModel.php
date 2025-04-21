@@ -40,11 +40,12 @@ class GroupsModel extends Model
             'min_length' => 'Password minimal 6 karakter.',
         ],
     ];
-    public function getGroupsWithCreatorName()
-{
-    return $this->select('groups.*, user.username AS creator_name')
-                ->join('user', 'user.id_user = groups.created_by')
-                ->findAll();
-}
 
+    // Menambahkan method untuk mengambil data grup beserta nama creator
+    public function getGroupsWithCreatorName()
+    {
+        return $this->select('groups.*, user.username AS creator_name')
+                    ->join('user', 'user.id_user = groups.created_by')  // Pastikan nama tabel 'user' sesuai dengan tabel di database
+                    ->findAll();
+    }
 }

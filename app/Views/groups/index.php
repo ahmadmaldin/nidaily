@@ -23,7 +23,6 @@
             <th>Tanggal Buat</th>
             <th>Deskripsi</th>
             <th>Foto</th>
-            <th>Member</th>
             <th>Aksi</th>
         </tr>
     </thead>
@@ -43,10 +42,7 @@
                             <p>Tidak ada foto</p>
                         <?php endif; ?>
                     </td>
-                    <td>
-                        <a href="<?= site_url('groups/' . $group['id_groups'] . '/members'); ?>">Lihat Member</a> | 
-                        <a href="<?= site_url('groups/addMember/' . $group['id_groups']); ?>">Tambah Member</a>
-                    </td>
+
                     <td>
                         <a href="<?= site_url('groups/edit/' . $group['id_groups']); ?>" class="btn btn-warning">Edit</a> | 
                             <a href="<?= site_url('groups/' . $group['id_groups'] . '/detail'); ?>">Detail</a> | 
