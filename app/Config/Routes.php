@@ -80,5 +80,23 @@ $routes->post('shared/store', 'Shared::store');
 $routes->post('shared/shareToGroup/(:num)', 'Shared::shareToGroup/$1');
 $routes->get('shared/delete/(:num)', 'Shared::delete/$1');
 $routes->get('shared/updateStatusNext/(:num)', 'Shared::updateStatusNext/$1');
+$routes->group('tugas', function($routes) {
+    // Routes untuk menampilkan detail tugas
+    $routes->get('detail/(:num)', 'Tugas::detail/$1');
 
+    // Route untuk menampilkan form berbagi tugas ke teman dan grup
+    $routes->get('share/(:num)', 'Tugas::share/$1');
 
+    // Route untuk menyimpan pembagian tugas ke grup
+    $routes->post('storeShareToGroup/(:num)', 'Tugas::storeShareToGroup/$1');
+
+    // Route untuk menyimpan pembagian tugas ke teman
+    $routes->post('storeShareToFriend/(:num)', 'Tugas::storeShareToFriend/$1');
+});
+
+// Friendship
+$routes->get('friendship', 'Friendship::index');
+$routes->post('friendship/add', 'Friendship::add');
+$routes->get('friendship/accept/(:num)', 'Friendship::accept/$1');
+$routes->get('friendship/decline/(:num)', 'Friendship::decline/$1');
+$routes->post('friendship/remove/(:num)', 'Friendship::remove/$1'); 

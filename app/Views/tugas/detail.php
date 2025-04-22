@@ -170,7 +170,7 @@
     </div>
   </div>
 
-  <button type="submit" id="submit-btn" class="btn btn-primary mt-2">Simpan</button>
+  <button type="submit" id="submit-btn" class="btn btn-inverse-info btn-fw">Simpan</button>
 </form>
 
 <script>
@@ -250,8 +250,8 @@
                             <form action="<?= site_url('attachment/delete/' . $attach['id_attachment']); ?>" method="post" onsubmit="return confirm('Are you sure you want to delete this attachment?');">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
+                                <button type="submit" class="btn btn-inverse-danger btn-fw">Hapus</button>
+                              </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -282,7 +282,7 @@
     </div>
 
     <input type="hidden" name="sharedtype" value="user">
-    <button type="submit" class="btn btn-primary mt-3">Bagikan ke User</button>
+    <button type="submit" class="btn btn-inverse-success btn-fw">Bagikan ke User</button>
 </form>
 
 <hr>
@@ -298,7 +298,7 @@
             <?php endforeach; ?>
         </select>
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Bagikan ke Grup</button>
+    <button type="submit" class="btn btn-inverse-success btn-fw">Bagikan ke Grup</button>
 </form>
 <hr></hr>
 

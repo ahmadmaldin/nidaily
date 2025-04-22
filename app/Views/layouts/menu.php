@@ -18,15 +18,6 @@
     </li>
 
     <li class="nav-item menu-items">
-        <a class="nav-link" href="<?= site_url('/user') ?>">
-            <span class="menu-icon">
-                <i class="mdi mdi-account"></i>
-            </span>
-            <span class="menu-title">User</span>
-        </a>
-    </li>
-
-    <li class="nav-item menu-items">
         <a class="nav-link" href="<?= site_url('/groups') ?>">
             <span class="menu-icon">
                 <i class="mdi mdi-account-multiple"></i>
@@ -34,7 +25,22 @@
             <span class="menu-title">Groups</span>
         </a>
     </li>
-
+    <li class="nav-item menu-items">
+        <a class="nav-link" href="<?= site_url('/frienship') ?>">
+            <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+            </span>
+            <span class="menu-title">Friendship</span>
+        </a>
+    </li>
+    <li class="nav-item menu-items">
+        <a class="nav-link" href="<?= site_url('/user/edit') ?>">
+            <span class="menu-icon">
+                <i class="mdi mdi-database"></i>
+            </span>
+            <span class="menu-title">Setting</span>
+        </a>
+    </li>
     <li class="nav-item menu-items">
         <a class="nav-link" href="<?= site_url('/backup') ?>">
             <span class="menu-icon">

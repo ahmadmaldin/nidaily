@@ -47,9 +47,9 @@
                 <div class="mt-3">
                   <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">MASUK</button>
                 </div>
-                <div class="text-center mt-4 font-weight-light">
-                  Belum punya akun? <a href="<?= base_url('register') ?>" class="text-primary">Daftar</a>
-                </div>
+                <div class="text-center mt-3">
+    <p>Belum punya akun? <a href="<?= base_url('user/create') ?>">Daftar di sini</a></p>
+</div>
               </form>
             </div>
           </div>

@@ -14,10 +14,10 @@
 <a href="<?= base_url('groups/create') ?>" class="btn btn-primary">Tambah Grup</a><br><br>
 
 <!-- Tabel Daftar Grup -->
-<table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>ID Grup</th>
+            <th>#</th>
             <th>Nama Grup</th>
             <th>Dibuat Oleh</th>
             <th>Tanggal Buat</th>
@@ -33,26 +33,24 @@
                     <td><?= esc($group['id_groups']) ?></td>
                     <td><?= esc($group['group_name']) ?></td>
                     <td><?= esc($group['creator_name']) ?></td>
-                    <td><?= date('d-m-Y H:i', strtotime($group['created_date'])) ?></td> <!-- Format Tanggal -->
+                    <td><?= date('d-m-Y H:i', strtotime($group['created_date'])) ?></td>
                     <td><?= esc($group['description']) ?></td>
                     <td>
                         <?php if (!empty($group['photo'])) : ?>
-                            <img src="<?= base_url('uploads/groups/' . $group['photo']) ?>" alt="Foto Grup" style="max-width: 100px;">
+                            <img src="<?= base_url('uploads/groups/' . $group['photo']) ?>" alt="Foto Grup" style="max-width: 100px;" class="img-fluid rounded">
                         <?php else : ?>
                             <p>Tidak ada foto</p>
                         <?php endif; ?>
                     </td>
-
                     <td>
-                        <a href="<?= site_url('groups/edit/' . $group['id_groups']); ?>" class="btn btn-warning">Edit</a> | 
-                            <a href="<?= site_url('groups/' . $group['id_groups'] . '/detail'); ?>">Detail</a> | 
-
-                        <a href="<?= site_url('groups/delete/' . $group['id_groups']); ?>" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus grup ini?');">Hapus</a>
+                        <a href="<?= site_url('groups/edit/' . $group['id_groups']); ?>" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="<?= site_url('groups/' . $group['id_groups'] . '/detail'); ?>" class="btn btn-sm btn-info">Detail</a>
+                        <a href="<?= site_url('groups/delete/' . $group['id_groups']); ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus grup ini?');">Hapus</a>
                     </td>
                 </tr>
             <?php endforeach ?>
         <?php else : ?>
-            <tr><td colspan="8">Tidak ada grup ditemukan.</td></tr>
+            <tr><td colspan="7">Tidak ada grup ditemukan.</td></tr>
         <?php endif ?>
     </tbody>
 </table>
