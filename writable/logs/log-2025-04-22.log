@@ -1674,3 +1674,5 @@ OR `friendship`.`id_friend` = :friendship.id_friend:
 13 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 14 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
 DEBUG - 2025-04-22 07:57:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-22 08:00:00 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-22 08:00:02 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.

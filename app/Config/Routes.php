@@ -74,6 +74,9 @@ $routes->post('/groups/storeMember/(:num)', 'Groups::storeMember/$1');
 $routes->get('groups/addMember/(:num)', 'Groups::addMember/$1');
 $routes->get('groups/members/(:num)', 'Groups::members/$1');
 $routes->get('/groups/(:num)/detail', 'Groups::detail/$1');
+$routes->match(['get', 'post'], 'groups/detail/(:num)', 'Groups::detail/$1');
+$routes->get('groups/removeMember/(:num)/(:num)', 'Groups::removeMember/$1/$2');
+
 
 //shared
 $routes->post('shared/store', 'Shared::store');

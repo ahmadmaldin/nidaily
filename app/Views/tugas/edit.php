@@ -50,10 +50,11 @@
 
             <input type="hidden" name="creator_id" value="<?= $tugas['creator_id']; ?>">
 
-            <button type="submit" class="btn btn-primary mt-3">Simpan Perubahan</button>
-            <a href="<?= site_url('tugas'); ?>" class="btn btn-link mt-3">← Kembali ke Daftar Task</a>
+            <button type="submit" class="btn btn-inverse-primary btn-fw">Simpan Perubahan</button>
+            <a href="<?= site_url('tugas'); ?>" class="btn btn-inverse-secondary btn-fw">Kembali
+                
+            </a>
         </form>
     </div>
 </div>
-
 <?= $this->endSection(); ?>

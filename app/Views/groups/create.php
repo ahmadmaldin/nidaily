@@ -1,8 +1,16 @@
 <?= $this->extend('layouts/main'); ?>
 <?= $this->section('content'); ?>
 
-<h1><?= esc($title) ?></h1>
+<!-- Page Title -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mt-4"><?= esc($title) ?></h2>
+        </div>
+    </div>
+</div>
 
+<!-- Error Handling -->
 <?php if (session()->getFlashdata('errors')) : ?>
     <div class="alert alert-danger">
         <ul>
@@ -13,29 +21,36 @@
     </div>
 <?php endif; ?>
 
+<!-- Form Input -->
 <form action="<?= site_url('groups/store'); ?>" method="post" enctype="multipart/form-data">
     <?= csrf_field(); ?>
 
-    <!-- Input untuk Nama Grup -->
-    <label for="group_name">Nama Grup:</label>
-    <input type="text" name="group_name" id="group_name" value="<?= old('group_name') ?>" required><br><br>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <!-- Input untuk Nama Grup -->
+            <div class="form-group">
+                <label for="group_name">Nama Grup</label>
+                <input type="text" name="group_name" id="group_name" class="form-control" value="<?= old('group_name') ?>" required>
+            </div>
 
-    <!-- Input untuk Password Grup -->
-    <label for="password">Password Grup (Opsional):</label>
-    <input type="password" name="password" id="password" value="<?= old('password') ?>"><br><br>
+            <!-- Textarea untuk Deskripsi Grup -->
+            <div class="form-group">
+                <label for="description">Deskripsi</label>
+                <textarea name="description" id="description" class="form-control"><?= old('description') ?></textarea>
+            </div>
 
-    <!-- Textarea untuk Deskripsi Grup -->
-    <label for="description">Deskripsi:</label><br>
-    <textarea name="description" id="description"><?= old('description') ?></textarea><br><br>
+            <!-- Input untuk Foto Grup -->
+            <div class="form-group">
+                <label for="photo">Foto Grup</label>
+                <input type="file" name="photo" id="photo" class="form-control-file">
+            </div>
 
-    <!-- Input untuk Foto Grup -->
-    <label for="photo">Foto Grup:</label>
-    <input type="file" name="photo" id="photo"><br><br>
+            <button type="submit" class="btn btn-primary">Tambah</button>
+            <a href="<?= site_url('groups'); ?>" class="btn btn-inverse-secondary btn-fw">Kembali</a>
 
-    <button type="submit">Simpan</button>
+        </div>
+    </div>
 </form>
-
 <!-- Link untuk kembali ke daftar grup -->
-<a href="/groups">← Kembali ke daftar grup</a>
 
 <?= $this->endSection(); ?>
