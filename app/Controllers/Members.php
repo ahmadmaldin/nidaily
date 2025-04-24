@@ -11,14 +11,21 @@ class Members extends Controller
     public function index()
     {
         $model = new MembersModel();
-        $data['members'] = $model->findAll();
-        return view('members/index', $data);  // Menampilkan daftar member
+        $data['members'] = $model->findAll(); // Mengambil semua member dari database
+        
+        // Mendapatkan session user ID
+        $sessionUserId = session()->get('user_id');  // Pastikan 'user_id' sesuai dengan yang disimpan dalam sesi
+
+        // Mengirimkan sessionUserId ke view
+        return view('members/index', ['members' => $data['members'], 'sessionUserId' => $sessionUserId]);
     }
 
     // Tampilkan form untuk menambah member
-    public function create()
+    public function create($groupId)
     {
-        return view('members/create');  // Menampilkan form tambah member
+        // Mengirimkan ID grup dan session user ke view
+        $sessionUserId = session()->get('user_id');
+        return view('members/create', ['groupId' => $groupId, 'sessionUserId' => $sessionUserId]);
     }
 
     // Menyimpan data member baru
@@ -43,9 +50,12 @@ class Members extends Controller
         ];
 
         // Insert data ke database
-        $model->insert($data);
-
-        return redirect()->to('/members')->with('success', 'Member berhasil ditambahkan.');
+        if ($model->insert($data)) {
+            // Redirect ke halaman detail grup setelah berhasil menambahkan member
+            return redirect()->to('/groups/detail/' . $data['id_groups'])->with('success', 'Member berhasil ditambahkan.');
+        } else {
+            return redirect()->back()->with('error', 'Gagal menambahkan member.');
+        }
     }
 
     // Form untuk edit member
@@ -84,16 +94,29 @@ class Members extends Controller
         ];
 
         // Update data member berdasarkan ID
-        $model->update($id, $data);
-
-        return redirect()->to('/members')->with('success', 'Member berhasil diperbarui.');
+        if ($model->update($id, $data)) {
+            return redirect()->to('/members')->with('success', 'Member berhasil diperbarui.');
+        } else {
+            return redirect()->back()->with('error', 'Gagal memperbarui member.');
+        }
     }
 
     // Hapus data member
     public function delete($id)
     {
         $model = new MembersModel();
-        $model->delete($id);  // Menghapus member berdasarkan ID
-        return redirect()->to('/members')->with('success', 'Member berhasil dihapus.');
+
+        // Cek apakah member ada sebelum dihapus
+        $member = $model->find($id);
+        if (!$member) {
+            return redirect()->to('/members')->with('error', 'Member tidak ditemukan.');
+        }
+
+        // Hapus member berdasarkan ID
+        if ($model->delete($id)) {
+            return redirect()->to('/members')->with('success', 'Member berhasil dihapus.');
+        } else {
+            return redirect()->to('/members')->with('error', 'Gagal menghapus member.');
+        }
     }
 }

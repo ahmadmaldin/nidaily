@@ -1,6 +1,11 @@
 <?= $this->extend('layouts/main'); ?>
 <?= $this->section('content'); ?>
-
+<a href="<?= previous_url() ?>" class="btn btn-inverse-secondary btn-fw">
+    Kembali
+</a>
+<p>
+  
+</p>
 <h3>Detail Task</h3>
 <?php if (!empty($tugas)): ?>
     <div class="row">
@@ -241,17 +246,17 @@
                         <td><?= esc($attach['description']); ?></td>
                         <td>
                             <?php if ($attach['type'] === 'link' || $attach['type'] === 'maps'): ?>
-                                <a href="<?= esc($attach['file']); ?>" target="_blank">Buka</a>
+                                <a href="<?= esc($attach['file']); ?>" target="_blank"><i class="fa fa-external-link"></i> Buka</a>
                             <?php else: ?>
-                                <a href="<?= base_url('uploads/attachment/' . $attach['file']); ?>" target="_blank">Download</a>
+                                <a href="<?= base_url('uploads/attachment/' . $attach['file']); ?>" target="_blank"><i class="fa fa-download"></i> Download</a>
                             <?php endif; ?>
                         </td>
                         <td>
-                            <form action="<?= site_url('attachment/delete/' . $attach['id_attachment']); ?>" method="post" onsubmit="return confirm('Are you sure you want to delete this attachment?');">
+                            <form action="<?= site_url('attachment/delete/' . $attach['id_attachment']); ?>" method="post" onsubmit="return confirm('Apakah Anda yakin ingin menghapus attachment ini?');">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="btn btn-inverse-danger btn-fw">Hapus</button>
-                              </form>
+                                <button type="submit" class="btn btn-inverse-danger btn-fw"><i class="fa fa-trash"></i> Hapus</button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -261,67 +266,30 @@
 <?php else: ?>
     <p>Belum ada attachment untuk tugas ini.</p>
 <?php endif; ?>
-<h4></h4>
-<hr></hr>
-<h3>Bagikan Tugas</h3>
-
-<!-- Form bagikan ke user -->
-<form action="<?= base_url('shared/store') ?>" method="post">
-    <input type="hidden" name="id_tugas" value="<?= esc($tugas['id']); ?>">
-
-    <div class="form-group">
-        <label for="id_user">Pilih User:</label>
-        <select name="id_user" class="form-control" required>
-            <option value="">-- Pilih User --</option>
-            <?php foreach ($users as $user): ?>
-                <?php if ($user['id_user'] != session()->get('id_user')): ?>
-                    <option value="<?= $user['id_user'] ?>"><?= $user['username'] ?></option>
-                <?php endif; ?>
-            <?php endforeach; ?>
-        </select>
-    </div>
-
-    <input type="hidden" name="sharedtype" value="user">
-    <button type="submit" class="btn btn-inverse-success btn-fw">Bagikan ke User</button>
-</form>
-
-<hr>
-
-<!-- Form bagikan ke grup -->
-<form action="<?= base_url('shared/shareToGroup/' . $tugas['id']) ?>" method="post">
-    <div class="form-group">
-        <label for="id_groups">Pilih Grup:</label>
-        <select name="id_groups" class="form-control" required>
-            <option value="">-- Pilih Grup --</option>
-            <?php foreach ($groups as $group): ?>
-                <option value="<?= $group['id_groups'] ?>"><?= $group['group_name'] ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    <button type="submit" class="btn btn-inverse-success btn-fw">Bagikan ke Grup</button>
-</form>
 <hr></hr>
 
 <h3>Daftar Penerima Tugas</h3>
 <?php if (!empty($sharedUsers)) : ?>
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-                <th>ID User</th>
-                <th>Nama User</th>
-                <th>Tanggal Dibagikan</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($sharedUsers as $user) : ?>
+    <div class="table-responsive">
+        <table class="table table-bordered mt-3">
+            <thead>
                 <tr>
-                    <td><?= esc($user['id_user']) ?></td>
-                    <td><?= esc($user['username']) ?></td>
-                    <td><?= date('d-m-Y H:i', strtotime($user['share_date'])) ?></td>
+                    <th>ID User</th>
+                    <th>Nama User</th>
+                    <th>Tanggal Dibagikan</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($sharedUsers as $user) : ?>
+                    <tr>
+                        <td><?= esc($user['id_user']) ?></td>
+                        <td><?= esc($user['username']) ?></td>
+                        <td><?= date('d-m-Y H:i', strtotime($user['share_date'])) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 <?php else : ?>
     <p>Tugas ini belum dibagikan ke siapa pun.</p>
 <?php endif; ?>

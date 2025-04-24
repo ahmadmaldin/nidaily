@@ -8,16 +8,20 @@ use App\Models\AttachmentModel;
 use App\Models\UserModel;
 use App\Models\GroupsModel;
 use App\Models\SharedModel;
+use App\Models\FriendshipModel;
 
 class Tugas extends BaseController
 {
     protected $tugasModel;
+    protected $sharedModel;
 
     public function __construct()
     {
         $this->tugasModel = new TugasModel();
+        $this->sharedModel = new SharedModel();
     }
 
+    // Menampilkan daftar tugas milik pengguna
     public function index()
     {
         $userId = session()->get('id_user');
@@ -37,20 +41,22 @@ class Tugas extends BaseController
         $tugas = $query->paginate($perPage);
 
         $data = [
-            'title'  => 'Daftar Tugas Saya',
+            'title' => 'Daftar Tugas Saya',
             'tugas' => $tugas,
-            'pager'  => $this->tugasModel->pager,
+            'pager' => $this->tugasModel->pager,
             'keyword' => $keyword
         ];
 
         return view('tugas/index', $data);
     }
 
+    // Halaman untuk membuat tugas baru
     public function create()
     {
         return view('tugas/create');
     }
 
+    // Menyimpan tugas baru ke database
     public function store()
     {
         $data = [
@@ -62,8 +68,6 @@ class Tugas extends BaseController
             'created' => time(),
             'date_due' => $this->request->getPost('date_due'),
             'time_due' => $this->request->getPost('time_due'),
-            'date_finished' => $this->request->getPost('date_finished'),
-            'time_finished' => $this->request->getPost('time_finished'),
             'creator_id' => session()->get('id_user')
         ];
 
@@ -71,11 +75,19 @@ class Tugas extends BaseController
         return redirect()->to('/tugas');
     }
 
+    // Halaman untuk mengedit tugas
     public function edit($id)
     {
-        return view('tugas/edit', ['tugas' => $this->tugasModel->find($id)]);
+        $tugas = $this->tugasModel->find($id);
+
+        if (!$tugas) {
+            return redirect()->to('/tugas')->with('error', 'Tugas tidak ditemukan.');
+        }
+
+        return view('tugas/edit', ['tugas' => $tugas]);
     }
 
+    // Memperbarui tugas yang sudah ada
     public function update($id)
     {
         $data = [
@@ -95,121 +107,159 @@ class Tugas extends BaseController
         return redirect()->to('/tugas');
     }
 
+    // Menghapus tugas
     public function delete($id)
     {
         $this->tugasModel->delete($id);
         return redirect()->to('/tugas');
     }
 
+    // Menampilkan detail tugas
     public function detail($id)
-{
-    $attachmentModel = new AttachmentModel();
-    $userModel = new UserModel();
-    $groupsModel = new GroupsModel();
-    $sharedModel = new SharedModel();
-
-    $tugas = $this->tugasModel->find($id);
-    $attachments = $attachmentModel->where('id_tugas', $id)->findAll();
-    $users = $userModel->findAll();
-    $groups = $groupsModel->findAll();
-    $sharedUsers = $sharedModel
-                    ->join('user', 'user.id_user = shared.id_user')
-                    ->where('id_tugas', $id)
-                    ->findAll();
-
-    return view('tugas/detail', [
-        'title' => 'Detail Tugas',
-        'tugas' => $tugas,
-        'attachments' => $attachments,
-        'users' => $users,
-        'groups' => $groups,
-        'sharedUsers' => $sharedUsers
-    ]);
-
-    
-}
-
-    public function show($id)
     {
-        $tugas = $this->tugasModel->getTugasWithCreator($id);
-        return view('tugas/detail', ['tugas' => $tugas]);
+        $attachmentModel = new AttachmentModel();
+        $userModel = new UserModel();
+        $groupsModel = new GroupsModel();
+        $sharedModel = new SharedModel();
+
+        // Ambil data tugas
+        $tugas = $this->tugasModel->find($id);
+
+        if (!$tugas) {
+            return redirect()->to('/tugas')->with('error', 'Tugas tidak ditemukan.');
+        }
+
+        // Mengambil lampiran tugas
+        $attachments = $attachmentModel->where('id_tugas', $id)->findAll();
+
+        // Mengambil daftar teman dan grup
+        $users = $userModel->findAll();
+        $groups = $groupsModel->findAll();
+
+        // Mengambil pengguna yang telah berbagi tugas
+        $sharedUsers = $sharedModel
+            ->join('user', 'user.id_user = shared.id_user')
+            ->where('shared.id_tugas', $id)
+            ->findAll();
+
+        return view('tugas/detail', [
+            'title' => 'Detail Tugas',
+            'tugas' => $tugas,
+            'attachments' => $attachments,
+            'users' => $users,
+            'groups' => $groups,
+            'sharedUsers' => $sharedUsers
+        ]);
     }
 
-    public function share($id = null)
+    // Menampilkan tugas yang dibagikan kepada pengguna
+    public function sharedToMe()
     {
-        if ($id === null) {
-            return redirect()->to('/tugas')->with('error', 'ID tugas tidak ditemukan.');
-        }
+        $id_user = session()->get('id_user');
+        $sharedTugas = $this->sharedModel
+            ->join('tugas', 'tugas.id = shared.id_tugas')
+            ->select('shared.*, tugas.tugas, tugas.id as tugas_id')
+            ->where('shared.id_user', $id_user)
+            ->findAll();
     
         $userModel = new UserModel();
-        $friendshipModel = new FriendshipModel();
-        $groupsModel = new GroupsModel();
-        
-        $data['tugas'] = $this->tugasModel->find($id);
+        $users = [];
     
-        if (!$data['tugas']) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Tugas dengan ID $id tidak ditemukan.");
-        }
-    
-        // Ambil teman dan grup
-        $data['friends'] = $friendshipModel->getFriends(session()->get('id_user'));
-        $data['groups'] = $groupsModel->findAll(); // Atau sesuaikan jika grup memiliki relasi tertentu
-    
-        return view('tugas/shared', $data);
-    }
-    public function storeShareToGroup($id)
-    {
-        $sharedModel = new SharedModel();
-        $groupId = $this->request->getPost('group_id');  // Ambil group ID yang dipilih
-        $groupsModel = new GroupsModel();
-        
-        // Ambil semua anggota dari grup yang dipilih
-        $members = $groupsModel->getGroupMembers($groupId);
-    
-        foreach ($members as $member) {
-            $userId = $member['id_user'];  // Ambil ID user dari anggota grup
-            // Cek apakah sudah pernah dibagikan
-            $alreadyShared = $sharedModel->where('id_tugas', $id)->where('id_user', $userId)->first();
-    
-            if (!$alreadyShared) {
-                $sharedModel->save([
-                    'id_tugas' => $id,
-                    'id_user' => $userId,
-                    'shared_by_user_id' => session()->get('id_user'),
-                    'accepted' => 'pending',
-                    'share_date' => date('Y-m-d H:i:s')
-                ]);
+        foreach ($sharedTugas as $shared) {
+            $user = $userModel->find($shared['shared_by_user_id']);
+            if ($user) {
+                $users[$shared['shared_by_user_id']] = $user['username'];
             }
         }
     
-        return redirect()->to('/tugas/detail/' . $id)->with('success', 'Tugas berhasil dibagikan ke grup.');
+        return view('tugas/sharedtome', [
+            'shared_tugas' => $sharedTugas,
+            'users' => $users
+        ]);
     }
-    public function storeShareToFriend($id)
+    
+    public function acceptTask($sharedId)
     {
-        $sharedModel = new SharedModel();
-        $friendId = $this->request->getPost('friend_id');  // Ambil friend ID yang dipilih
-        $currentUserId = session()->get('id_user');
+        $shared = $this->sharedModel->find($sharedId);
     
-        // Cek apakah sudah dibagikan sebelumnya
-        $alreadyShared = $sharedModel->where('id_tugas', $id)->where('id_user', $friendId)->first();
-    
-        if ($alreadyShared) {
-            return redirect()->back()->with('error', 'Tugas sudah pernah dibagikan ke teman ini.');
+        if (!$shared) {
+            return redirect()->to('/tugas/sharedtome')->with('error', 'Tugas tidak ditemukan.');
         }
     
-        $sharedModel->save([
-            'id_tugas' => $id,
-            'id_user' => $friendId,
-            'shared_by_user_id' => $currentUserId,
-            'accepted' => 'pending',
-            'share_date' => date('Y-m-d H:i:s'),
-            'accept_date' => null
+        $this->sharedModel->update($sharedId, [
+            'accepted' => 1,
+            'accept_date' => date('Y-m-d H:i:s')
         ]);
     
-        session()->setFlashdata('message', 'Tugas berhasil dibagikan ke teman!');
-        return redirect()->to('/dashboard');
+        return redirect()->to('/tugas/sharedtome')->with('message', 'Tugas berhasil diterima.');
     }
-            
-
     
+    // Menampilkan form berbagi tugas
+    public function share($taskId)
+    {
+        $task = $this->tugasModel->find($taskId);
+
+        if (!$task) {
+            return redirect()->to('/tugas')->with('error', 'Tugas tidak ditemukan.');
+        }
+
+        $friendshipModel = new FriendshipModel();
+        $groupsModel = new GroupsModel();
+        $friends = $friendshipModel->getFriends(session()->get('id_user')); // Ambil teman berdasarkan id_user
+        $groups = $groupsModel->findAll(); // Ambil semua grup
+
+        return view('tugas/share', [
+            'task' => $task,
+            'friends' => $friends,
+            'groups' => $groups
+        ]);
+    }
+
+    // Memproses pembagian tugas
+    public function processShare($taskId)
+    {
+        // Periksa apakah taskId valid
+        if (!$taskId || !is_numeric($taskId)) {
+            return redirect()->to('/tugas')->with('error', 'ID tugas tidak valid.');
+        }
+
+        // Ambil data teman dan grup yang dipilih
+        $friendsSelected = $this->request->getPost('friends');
+        $groupsSelected = $this->request->getPost('groups');
+
+        if (!empty($friendsSelected)) {
+            foreach ($friendsSelected as $friendId) {
+                $this->shareTaskToFriend($taskId, $friendId);
+            }
+        }
+
+        if (!empty($groupsSelected)) {
+            foreach ($groupsSelected as $groupId) {
+                $this->shareTaskToGroup($taskId, $groupId);
+            }
+        }
+
+        return redirect()->to('/tugas')->with('message', 'Tugas berhasil dibagikan.');
+    }
+
+    public function shareTaskToFriend($taskId, $friendId)
+    {
+        $sharedData = [
+            'id_tugas' => $taskId,
+            'id_user' => $friendId,
+            'shared_by_user_id' => session()->get('id_user'),
+            'share_date' => date('Y-m-d H:i:s'),
+            'accept_date' => null
+        ];
+    
+        $this->sharedModel->save($sharedData);
+    }
+    
+
+    // Membagikan tugas ke grup
+    public function shareTaskToGroup($taskId, $groupId)
+    {
+        // Logic untuk membagikan tugas ke grup akan ditambahkan sesuai kebutuhan
+    }
+
 }

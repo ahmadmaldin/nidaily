@@ -2,6 +2,7 @@
 <?= $this->section('content'); ?>
 
 <div class="row">
+  <!-- Kolom Form Edit -->
   <div class="col-md-8">
     <div class="card">
       <div class="card-body">
@@ -38,7 +39,7 @@
 
           <div class="form-group">
             <label for="photo">Ganti Foto Grup</label>
-            <input type="file" class="form-control-file" id="photo" name="photo">
+            <input type="file" class="form-control" id="photo" name="photo">
           </div>
 
           <button type="submit" class="btn btn-primary mr-2">Update</button>
@@ -49,21 +50,25 @@
   </div>
 
   <!-- Kolom Foto -->
-  <form action="<?= base_url('/groups/store') ?>" method="post" enctype="multipart/form-data">
-  <?= csrf_field() ?>
   <div class="col-md-4">
-    <div class="card">
-      <div class="card-body text-center">
+    <div class="card h-100">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center text-center">
         <h5>Foto Grup</h5>
         <?php if (!empty($group['photo'])) : ?>
-          <img src="<?= base_url('public/uploads/groups/' . $group['photo']); ?>" alt="Foto Grup" class="img-fluid rounded" style="max-width: 100%;">
+          <img src="<?= base_url('public/uploads/groups/' . $group['photo']); ?>" alt="Foto Grup" class="img-fluid rounded mb-3" style="max-height: 300px; object-fit: cover;">
         <?php else : ?>
-          <p class="text-muted">Belum ada foto</p>
+          <div class="text-muted mb-3">Belum ada foto</div>
         <?php endif; ?>
       </div>
     </div>
   </div>
-  </form>
 </div>
+
+<script>
+// Auto trigger file input ketika label ditekan
+document.querySelector("label[for='photo']").addEventListener("click", function () {
+  document.getElementById("photo").click();
+});
+</script>
 
 <?= $this->endSection(); ?>

@@ -11,6 +11,11 @@
   <link rel="stylesheet" href="<?= base_url('assets/vendors/ti-icons/css/themify-icons.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/vendors/css/vendor.bundle.base.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/css/vertical-layout-light/style.css'); ?>">
+  <link rel="stylesheet" href="<?= base_url('assets/skydash/css/style.css') ?>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Jika ada file CSS lain seperti Bootstrap, tambahkan juga -->
+<link rel="stylesheet" href="<?= base_url('assets/skydash/vendors/bootstrap/css/bootstrap.min.css') ?>">
 
   <link rel="shortcut icon" href="<?= base_url('assets/images/favicon.png'); ?>" />
 </head>
@@ -88,20 +93,22 @@
             </div>
           </li>
           <li class="nav-item nav-profile dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <img src="images/faces/face28.jpg" alt="profile"/>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
-                <i class="ti-settings text-primary"></i>
-                Settings
-              </a>
-              <a class="dropdown-item">
-                <i class="ti-power-off text-primary"></i>
-                Logout
-              </a>
-            </div>
-          </li>
+    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+        <!-- Menggunakan base_url untuk menghasilkan URL lengkap ke gambar profil -->
+        <img src="<?= base_url('public/uploads/user/' . session()->get('photo')) ?>" alt="profile"/>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+        <!-- Menu Profil -->
+        <a class="dropdown-item" href="<?= base_url('profile') ?>">
+            <i class="ti-user text-primary"></i> My Profile
+        </a>
+         <!-- Menu Logout -->
+        <a class="dropdown-item" href="<?= base_url('logout') ?>">
+            <i class="ti-power-off text-primary"></i> Logout
+        </a>
+    </div>
+</li>
+
           <li class="nav-item nav-settings d-none d-lg-flex">
             <a class="nav-link" href="#">
               <i class="icon-ellipsis"></i>
@@ -324,13 +331,14 @@
         </a>
     </li>
     <li class="nav-item menu-items">
-    <a class="nav-link" href="<?= site_url('user/edit/' . session('id_user')) ?>">
-        <span class="menu-icon">
-            <i class="menu-icon mdi mdi-settings"></i>
-        </span>
-        <span class="menu-title">Setting</span>
-            </a>
+        <a class="nav-link" href="<?= site_url('/sharedtome') ?>">
+            <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+            </span>
+            <span class="menu-title">Shared To Me</span>
+        </a>
     </li>
+
 
     <li class="nav-item menu-items">
         <a class="nav-link" href="<?= site_url('/backup') ?>">
@@ -338,15 +346,6 @@
                 <i class="mdi mdi-database"></i>
             </span>
             <span class="menu-title">Backup DB</span>
-        </a>
-    </li>
-
-    <li class="nav-item menu-items">
-        <a class="nav-link text-danger" href="<?= site_url('/logout') ?>">
-            <span class="menu-icon">
-                <i class="mdi mdi-logout"></i>
-            </span>
-            <span class="menu-title">Logout</span>
         </a>
     </li>
 </ul>

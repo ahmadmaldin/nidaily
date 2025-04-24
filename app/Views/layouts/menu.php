@@ -34,13 +34,29 @@
         </a>
     </li>
     <li class="nav-item menu-items">
-        <a class="nav-link" href="<?= site_url('/user/edit') ?>">
+        <a class="nav-link" href="<?= site_url('/sharedtome') ?>">
             <span class="menu-icon">
-                <i class="mdi mdi-database"></i>
+                <i class="mdi mdi-account-multiple"></i>
             </span>
-            <span class="menu-title">Setting</span>
+            <span class="menu-title">Shared To Me</span>
         </a>
     </li>
+    <li class="nav-item nav-profile dropdown">
+  <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
+    <img src="<?= base_url('public/uploads/user/') ?>" alt="profile" />
+  </a>
+  <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+    <a class="dropdown-item" href="<?= base_url('user/edit') ?>">
+      <i class="mdi mdi-settings text-primary"></i>
+      Settings
+    </a>
+    <a class="dropdown-item" href="<?= base_url('logout') ?>">
+      <i class="mdi mdi-logout text-primary"></i>
+      Logout
+    </a>
+  </div>
+</li>
+
     <li class="nav-item menu-items">
         <a class="nav-link" href="<?= site_url('/backup') ?>">
             <span class="menu-icon">

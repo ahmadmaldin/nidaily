@@ -10,7 +10,6 @@
     <tr>
         <th>ID</th>
         <th>Nama</th>
-        <th>Level</th>
         <th>Foto</th>
         <th>Aksi</th>
     </tr>
@@ -20,8 +19,7 @@
         <tr>
             <td><?= $row['id_user'] ?></td>
             <td><?= $row['username'] ?></td>
-            <td><?= $row['level'] ?></td>
-            <td><img src="<?= base_url('uploads/user/' . $row['photo']) ?>" width="50"></td>
+            <td><img src="<?= base_url('public/uploads/user/' . $row['photo']) ?>" width="60"></td>
             <td>
                 <a href="<?= base_url('/user/edit/' . $row['id_user']) ?>">Edit</a> |
                 <a href="<?= base_url('/user/delete/' . $row['id_user']) ?>" onclick="return confirm('Hapus data?')">Hapus</a>

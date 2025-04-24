@@ -4,119 +4,68 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\SharedModel;
-use App\Models\MemberModel;
-use App\Models\TugasModel;
 use App\Models\UserModel;
+use App\Models\TugasModel;
 use App\Models\GroupsModel;
 
 class Shared extends BaseController
 {
     protected $sharedModel;
+    protected $tugasModel;
 
     public function __construct()
     {
         $this->sharedModel = new SharedModel();
+        $this->tugasModel = new TugasModel();
     }
 
-    // Menyimpan data sharing tugas ke user
-    public function store()
+    // Tugas yang saya bagikan ke teman/grup
+    public function sharedList()
     {
-        $id_tugas = $this->request->getPost('id_tugas');
-        $id_user = $this->request->getPost('id_user');
-        $shared_by_user_id = session()->get('id');
+        $userId = session()->get('id_user');
+        $sharedTasks = $this->sharedModel
+            ->select('shared.*, tugas.tugas, user.username AS target_user, groups.group_name AS target_group')
+            ->join('tugas', 'tugas.id = shared.id_tugas')
+            ->join('user', 'user.id_user = shared.id_user', 'left')
+            ->join('groups', 'groups.id_groups = shared.id_user', 'left') // karena id_user juga bisa grup
+            ->where('shared.shared_by_user_id', $userId)
+            ->orderBy('shared.share_date', 'DESC')
+            ->findAll();
 
-        // Cek apakah sudah pernah dibagikan sebelumnya
-        $alreadyShared = $this->sharedModel
-            ->where('id_tugas', $id_tugas)
-            ->where('id_user', $id_user)
-            ->first();
-
-        if ($alreadyShared) {
-            return redirect()->back()->with('error', 'Tugas sudah pernah dibagikan ke user ini.');
-        }
-
-        $this->sharedModel->save([
-            'id_tugas'           => $id_tugas,
-            'id_user'           => $id_user,
-            'shared_by_user_id' => $shared_by_user_id,
-            'accepted'          => 'pending',
-            'share_date'        => date('Y-m-d H:i:s')
-        ]);
-
-        return redirect()->back()->with('success', 'Tugas berhasil dibagikan ke user.');
+        return view('tugas/sharedlist', ['sharedTasks' => $sharedTasks]);
     }
 
-    // Menyimpan data sharing tugas ke semua anggota group
-    public function shareToGroup($id_tugas)
+    // Tugas yang dibagikan ke saya (teman/grup)
+    public function sharedToMe()
     {
-        $groupId = $this->request->getPost('id_group');
-        $membersModel = new MembersModel();
-        $members = $membersModel->where('id_groups', $groupId)->findAll();
+        $userId = session()->get('id_user');
 
-        $currentUserId = session()->get('id');
+        $sharedToMe = $this->sharedModel
+            ->select('shared.*, tugas.tugas, user.username AS from_user')
+            ->join('tugas', 'tugas.id = shared.id_tugas')
+            ->join('user', 'user.id_user = shared.shared_by_user_id')
+            ->where('shared.id_user', $userId)
+            ->orderBy('shared.share_date', 'DESC')
+            ->findAll();
 
-        foreach ($members as $member) {
-            $id_user = $member['iduser'];
-
-            // Skip jika user adalah pengirimnya sendiri
-            if ($id_user == $currentUserId) {
-                continue;
-            }
-
-            // Cek apakah sudah dibagikan
-            $alreadyShared = $this->sharedModel
-                ->where('id_tugas', $id_tugas)
-                ->where('id_user', $id_user)
-                ->first();
-
-            if (!$alreadyShared) {
-                $this->sharedModel->save([
-                    'id_tugas'           => $id_tugas,
-                    'id_user'           => $id_user,
-                    'shared_by_user_id' => $currentUserId,
-                    'accepted'          => 'pending',
-                    'share_date'        => date('Y-m-d H:i:s')
-                ]);
-            }
-        }
-
-        return redirect()->to('tugas/detail/' . $id_tugas)->with('success', 'Tugas berhasil dibagikan ke grup.');
+        return view('tugas/sharedtome', ['sharedToMe' => $sharedToMe]);
     }
 
-    // Menghapus data sharing
-    public function delete($id)
+    // Konfirmasi penerimaan tugas (opsional)
+    public function accept($id_shared)
     {
-        $shared = $this->sharedModel->find($id);
-
-        if ($shared) {
-            $id_tugas = $shared['id_tugas'];
-            $this->sharedModel->delete($id);
-            return redirect()->to('/tugas/detail/' . $id_tugas)->with('success', 'Sharing berhasil dihapus.');
-        }
-
-        return redirect()->back()->with('error', 'Data sharing tidak ditemukan.');
-    }
-
-    // Update status accepted dari pending > yes > no > ulangi
-    public function updateStatusNext($id)
-    {
-        $shared = $this->sharedModel->find($id);
-
-        if (!$shared) {
-            return redirect()->back()->with('error', 'Data tidak ditemukan.');
-        }
-
-        $statusList = ['pending', 'yes', 'no'];
-        $currentStatus = $shared['accepted'] ?? 'pending';
-        $currentIndex = array_search($currentStatus, $statusList);
-        $nextIndex = ($currentIndex + 1) % count($statusList);
-        $nextStatus = $statusList[$nextIndex];
-
-        $this->sharedModel->update($id, [
-            'accepted'    => $nextStatus,
+        $this->sharedModel->update($id_shared, [
+            'accepted' => 1,
             'accept_date' => date('Y-m-d H:i:s')
         ]);
 
-        return redirect()->back()->with('success', 'Status diperbarui menjadi: ' . ucfirst($nextStatus));
+        return redirect()->back()->with('message', 'Tugas diterima.');
+    }
+
+    // Tolak atau hapus sharing (opsional)
+    public function reject($id_shared)
+    {
+        $this->sharedModel->delete($id_shared);
+        return redirect()->back()->with('message', 'Tugas ditolak.');
     }
 }

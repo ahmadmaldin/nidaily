@@ -44,10 +44,17 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="<?= site_url('groups/edit/' . $group['id_groups']); ?>" class="btn btn-sm btn-warning">Edit</a>
-                            <a href="<?= site_url('groups/' . $group['id_groups'] . '/detail'); ?>" class="btn btn-sm btn-info">Detail</a>
-                            <a href="<?= site_url('groups/delete/' . $group['id_groups']); ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus grup ini?');">Hapus</a>
-                        </td>
+    <a href="<?= site_url('groups/edit/' . $group['id_groups']); ?>" class="btn btn-sm btn-warning" title="Edit">
+        <i class="fa-solid fa-pen-to-square"></i> Edit
+    </a>
+    <a href="<?= site_url('groups/' . $group['id_groups'] . '/detail'); ?>" class="btn btn-sm btn-info" title="Detail">
+        <i class="fa-solid fa-info-circle"></i> Detail
+    </a>
+    <a href="<?= site_url('groups/delete/' . $group['id_groups']); ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus grup ini?');">
+        <i class="fa-solid fa-trash"></i> Hapus
+    </a>
+</td>
+
                     </tr>
                 <?php endforeach ?>
             <?php else : ?>

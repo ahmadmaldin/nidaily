@@ -1,24 +1,46 @@
 <?= $this->extend('layouts/main'); ?>
 <?= $this->section('content'); ?>
 
-<h2>Tambah Member</h2>
+<div class="row">
+  <div class="col-md-12">
+    <h4 class="mb-3"><?= esc($title) ?></h4>
 
-<form action="<?= site_url('members/store'); ?>" method="post">
-    <?= csrf_field(); ?>
+    <!-- Menampilkan Error jika ada -->
+    <?php if (isset($errors)) : ?>
+      <div class="alert alert-danger">
+        <ul>
+          <?php foreach ($errors as $error) : ?>
+            <li><?= esc($error) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
 
-    <label>ID Grup:</label><br>
-    <input type="number" name="id_groups" required><br><br>
+    <form action="<?= base_url('groups/store') ?>" method="POST" enctype="multipart/form-data">
+      <?= csrf_field() ?>
+      <div class="form-group">
+        <label for="group_name">Nama Grup</label>
+        <input type="text" name="group_name" id="group_name" class="form-control" value="<?= old('group_name') ?>" required>
+      </div>
 
-    <label>User ID:</label><br>
-    <input type="number" name="user_id" required><br><br>
+      <div class="form-group">
+        <label for="description">Deskripsi</label>
+        <textarea name="description" id="description" class="form-control"><?= old('description') ?></textarea>
+      </div>
 
-    <label>Level:</label><br>
-    <select name="member_level" required>
-        <option value="admin">Admin</option>
-        <option value="member">Member</option>
-    </select><br><br>
+      <div class="form-group">
+        <label for="password">Password (Opsional)</label>
+        <input type="password" name="password" id="password" class="form-control">
+      </div>
 
-    <button type="submit">Simpan</button>
-</form>
+      <div class="form-group">
+        <label for="photo">Foto Grup (Opsional)</label>
+        <input type="file" name="photo" id="photo" class="form-control">
+      </div>
+
+      <button type="submit" class="btn btn-success">Tambah Grup</button>
+    </form>
+  </div>
+</div>
 
 <?= $this->endSection(); ?>

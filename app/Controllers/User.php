@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Models\UserModel;
 use CodeIgniter\Controller;
 
-class user extends Controller
+class User extends Controller
 {
     protected $UserModel;
 
@@ -17,7 +17,7 @@ class user extends Controller
     public function index()
     {
         $keyword = $this->request->getGet('keyword');
-        $perPage = 10; // Jumlah data per halaman
+        $perPage = 10;
 
         if ($keyword) {
             $user = $this->UserModel->search($keyword, $perPage);
@@ -26,84 +26,100 @@ class user extends Controller
         }
 
         $data = [
-            'title'  => 'Data user',
-            'user' => $user,
-            'pager'  => $this->UserModel->pager, // Untuk pagination
-            'keyword' => $keyword
+            'title'   => 'Data User',
+            'user'    => $user,
+            'pager'   => $this->UserModel->pager,
+            'keyword' => $keyword,
         ];
+
         return view('user/index', $data);
     }
 
     public function create()
     {
-        $data = [
-            'title'  => 'Tambah user',
-        ];
-        return view('user/create', $data);
+        return view('user/create', ['title' => 'Buat Akun']);
     }
 
     public function store()
     {
-        $model = new UserModel();
-        $password = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
-
         $data = [
             'username' => $this->request->getPost('username'),
-            'level' => $this->request->getPost('level'),
-            'password' => $password,
-            'photo' => $this->uploadphoto()
+            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+            'level'    => 'user', // default level kalau belum diset di form
+            'photo'    => $this->uploadPhoto()
         ];
 
-        $model->insert($data);
-        return redirect()->to('/user')->with('success', 'User berhasil ditambahkan.');
+        $this->UserModel->insert($data);
+
+        return redirect()->to('/login')->with('success', 'Akun berhasil dibuat. Silakan login.');
     }
 
     public function edit($id)
     {
         $data = [
-            'title'  => 'Tambah user',
+            'title' => 'Edit User',
+            'user'  => $this->UserModel->find($id),
         ];
 
-        $model = new UserModel();
-        $data['user'] = $model->find($id);
         return view('user/edit', $data);
     }
 
     public function update($id_user)
-    {
-        $model = new UserModel();
-        $user = $model->find($id_user);
-        $password = $this->request->getPost('password') ? password_hash($this->request->getPost('password'), PASSWORD_DEFAULT) : $user['password'];
+{
+    $model = new UserModel();
+    $user = $model->find($id_user);
 
-        $data = [
-            'username' => $this->request->getPost('username'),
-            'level' => $this->request->getPost('level'),
-            'password' => $password
-        ];
+    $password = $this->request->getPost('password') 
+        ? password_hash($this->request->getPost('password'), PASSWORD_DEFAULT) 
+        : $user['password'];
 
-        if ($photo = $this->uploadphoto()) {
-            $data['photo'] = $photo;
-        }
+    $data = [
+        'username' => $this->request->getPost('username'),
+        'level' => $this->request->getPost('level'),
+        'password' => $password
+    ];
 
-        $model->update($id_user, $data);
+    if ($photo = $this->uploadphoto()) {
+        $data['photo'] = $photo;
+    }
+
+    $model->update($id_user, $data);
+
+    // Cek apakah user yang login adalah yang sedang diedit
+    if (session()->get('id_user') == $id_user) {
+        return redirect()->to('/profile')->with('success', 'Akun kamu berhasil diperbarui.');
+    } else {
         return redirect()->to('/user')->with('success', 'Data user berhasil diperbarui.');
     }
+}
+
 
     public function delete($id_user)
     {
-        $model = new UserModel();
-        $model->delete($id_user);
+        $this->UserModel->delete($id_user);
         return redirect()->to('/user')->with('success', 'Data user berhasil dihapus.');
     }
 
-    private function uploadphoto()
+    private function uploadPhoto()
     {
         $file = $this->request->getFile('photo');
         if ($file && $file->isValid() && !$file->hasMoved()) {
             $newName = $file->getRandomName();
-            $file->move('uploads/user/', $newName);
+            $file->move('public/uploads/user/', $newName); // sesuaikan path jika berbeda
             return $newName;
         }
         return null;
     }
+    public function profile()
+{
+    $userId = session()->get('id_user');
+    $model = new UserModel();
+    
+    // Ambil data user berdasarkan id_user yang ada di session
+    $data['user'] = $model->find($userId);
+    $data['title'] = 'Profil Pengguna';
+
+    return view('user/profile', $data);
+}
+
 }

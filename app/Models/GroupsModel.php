@@ -48,4 +48,14 @@ class GroupsModel extends Model
                     ->join('user', 'user.id_user = groups.created_by')  // Pastikan nama tabel 'user' sesuai dengan tabel di database
                     ->findAll();
     }
+
+    // Menambahkan method untuk mengambil anggota grup
+    public function getGroupMembers($groupId)
+    {
+        // Query untuk mendapatkan anggota grup
+        return $this->db->table('members')
+                        ->join('user', 'user.id_user = members.id_user')
+                        ->where('members.id_groups', $groupId)
+                        ->get()->getResultArray();
+    }
 }

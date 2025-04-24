@@ -28,23 +28,29 @@ $routes->get('/dashboard', 'Home::index', $authFilter);
 $routes->get('about', 'Home::about', $allRole);
 
 // tugas
-$routes->get('tugas', 'tugas::index');
-$routes->get('tugas/create', 'tugas::create');
-$routes->post('tugas/store', 'tugas::store');
-$routes->get('tugas/edit/(:num)', 'tugas::edit/$1');
-$routes->post('tugas/update/(:num)', 'tugas::update/$1');
-$routes->get('tugas/delete/(:num)', 'tugas::delete/$1');
-$routes->get('tugas/detail/(:num)', 'tugas::detail/$1');
-$routes->get('tugas/share/(:num)', 'Tugas::share/$1');
-$routes->post('tugas/share/(:num)', 'Tugas::storeShare/$1');   
+$routes->get('tugas', 'Tugas::index'); // Halaman utama tugas
+$routes->get('tugas/create', 'Tugas::create'); // Halaman untuk membuat tugas baru
+$routes->post('tugas/store', 'Tugas::store'); // Proses penyimpanan tugas baru
+$routes->get('tugas/edit/(:num)', 'Tugas::edit/$1'); // Halaman edit tugas dengan id
+$routes->post('tugas/update/(:num)', 'Tugas::update/$1'); // Proses update tugas
+$routes->get('tugas/delete/(:num)', 'Tugas::delete/$1'); // Menghapus tugas berdasarkan id
+$routes->get('tugas/detail/(:num)', 'Tugas::detail/$1'); // Halaman detail tugas berdasarkan id
+// Routes untuk berbagi tugas
+$routes->get('tugas/sharedtome/(:num)', 'Tugas::sharedToMe/$1'); // Halaman tugas yang dibagikan ke pengguna
+$routes->post('tugas/shareTaskToFriend/(:num)', 'Tugas::shareTaskToFriend/$1'); // Proses berbagi tugas ke teman
+$routes->get('tugas/share/(:num)', 'Tugas::share/$1'); // Halaman untuk memilih teman/grup yang akan dibagikan tugas
+$routes->post('tugas/processShare/(:num)', 'Tugas::processShare/$1');
+$routes->get('/sharedtome', 'Tugas::sharedToMe');
+
+
 //user
 $routes->get('user', 'user::index');
 $routes->get('user/create', 'user::create');
 $routes->post('user/store', 'user::store');
-$routes->get('user/edit/(:num)', 'user::edit/$1');
 $routes->post('user/update/(:num)', 'user::update/$1');
 $routes->get('user/delete/(:num)', 'user::delete/$1');
-
+$routes->get('/profile', 'User::profile');
+$routes->get('user/edit/(:num)', 'User::edit/$1');
 
 // attachment
 $routes->get('/attachment', 'Attachment::index');
@@ -76,26 +82,6 @@ $routes->get('groups/members/(:num)', 'Groups::members/$1');
 $routes->get('/groups/(:num)/detail', 'Groups::detail/$1');
 $routes->match(['get', 'post'], 'groups/detail/(:num)', 'Groups::detail/$1');
 $routes->get('groups/removeMember/(:num)/(:num)', 'Groups::removeMember/$1/$2');
-
-
-//shared
-$routes->post('shared/store', 'Shared::store');
-$routes->post('shared/shareToGroup/(:num)', 'Shared::shareToGroup/$1');
-$routes->get('shared/delete/(:num)', 'Shared::delete/$1');
-$routes->get('shared/updateStatusNext/(:num)', 'Shared::updateStatusNext/$1');
-$routes->group('tugas', function($routes) {
-    // Routes untuk menampilkan detail tugas
-    $routes->get('detail/(:num)', 'Tugas::detail/$1');
-
-    // Route untuk menampilkan form berbagi tugas ke teman dan grup
-    $routes->get('share/(:num)', 'Tugas::share/$1');
-
-    // Route untuk menyimpan pembagian tugas ke grup
-    $routes->post('storeShareToGroup/(:num)', 'Tugas::storeShareToGroup/$1');
-
-    // Route untuk menyimpan pembagian tugas ke teman
-    $routes->post('storeShareToFriend/(:num)', 'Tugas::storeShareToFriend/$1');
-});
 
 // Friendship
 $routes->get('friendship', 'Friendship::index');

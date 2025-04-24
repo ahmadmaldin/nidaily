@@ -6,16 +6,18 @@ use CodeIgniter\Model;
 
 class MembersModel extends Model
 {
-    
-    protected $table            = 'members';
-    protected $primaryKey       = 'id_members';
-    protected $useAutoIncrement = true;
-    protected $useTimestamps    = false;
-    protected $allowedFields = [
+    protected $table            = 'members';           // Nama tabel
+    protected $primaryKey       = 'id_members';       // Primary key
+    protected $useAutoIncrement = true;               // Menggunakan auto increment
+    protected $useTimestamps    = false;              // Tidak menggunakan timestamp otomatis
+    protected $allowedFields    = [
         'id_groups',   
         'id_user',      
         'member_level', 
     ];
+
+    // Mengatur tipe pengembalian data
+    protected $returnType = 'array'; // Mengembalikan hasil query dalam bentuk array
 
     // Validasi otomatis untuk input
     protected $validationRules = [
@@ -40,7 +42,12 @@ class MembersModel extends Model
         ],
     ];
 
-    // Relasi dengan tabel 'groups'
+    /**
+     * Mendapatkan data grup berdasarkan ID grup
+     *
+     * @param int $id_groups
+     * @return array
+     */
     public function getGroup($id_groups)
     {
         return $this->db->table('groups')
@@ -49,19 +56,32 @@ class MembersModel extends Model
                         ->getRowArray();
     }
 
-    // Relasi dengan tabel 'users' untuk mendapatkan data user
+    /**
+     * Mendapatkan data user berdasarkan ID user
+     *
+     * @param int $id_user
+     * @return array
+     */
     public function getUser($id_user)
     {
         return $this->db->table('users')
-                        ->where('id', $id_user)
+                        ->where('id_user', $id_user)
                         ->get()
                         ->getRowArray();
     }
 
-    // Mendapatkan semua member dalam grup tertentu
+    /**
+     * Mendapatkan semua anggota dalam grup tertentu
+     *
+     * @param int $id_groups
+     * @return array
+     */
     public function getMembersByGroup($id_groups)
     {
-        return $this->where('id_groups', $id_groups)->findAll();
+        // Menggunakan query builder untuk mengambil data anggota dan username dari tabel users
+        return $this->select('members.*, users.username') // Mengambil data anggota dan username
+                    ->join('users', 'users.id_user = members.id_user') // Melakukan join dengan tabel users
+                    ->where('members.id_groups', $id_groups) // Filter berdasarkan ID grup
+                    ->findAll(); // Mengembalikan semua anggota grup
     }
-    
 }

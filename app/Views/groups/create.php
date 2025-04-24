@@ -25,7 +25,7 @@
 <form action="<?= site_url('groups/store'); ?>" method="post" enctype="multipart/form-data">
     <?= csrf_field(); ?>
 
-    <div class="card shadow-sm">
+    
         <div class="card-body">
             <!-- Input untuk Nama Grup -->
             <div class="form-group">
@@ -49,7 +49,7 @@
             <a href="<?= site_url('groups'); ?>" class="btn btn-inverse-secondary btn-fw">Kembali</a>
 
         </div>
-    </div>
+    
 </form>
 <!-- Link untuk kembali ke daftar grup -->
 

@@ -2,11 +2,18 @@
 
 namespace App\Controllers;
 
+use App\Models\SharedModel;  // Pastikan Anda menambahkan model SharedModel
+use CodeIgniter\Controller;
+
 class Home extends BaseController
 {
-    public function index(): string
+    protected $sharedModel;
+
+    public function __construct()
     {
-        return view('layouts/dashboard', ['title' => 'Dashboard']);
+        // Inisialisasi model
+        $this->sharedModel = new SharedModel();
     }
 }
+
 
